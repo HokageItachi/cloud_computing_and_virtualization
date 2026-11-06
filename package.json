@@ -1,0 +1,22 @@
+{
+  "name": "cse423-cloud-computing-and-virtualization",
+  "version": "2.0.0",
+  "description": "Interactive study portal, laboratory manual, and comprehensive study pack for CSE423: Virtualization and Cloud Computing.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node build_interactive_app.js",
+    "test": "node test_full_suite.js",
+    "serve": "node server.js"
+  },
+  "keywords": [
+    "cloud-computing",
+    "virtualization",
+    "aws",
+    "cse423",
+    "study-portal",
+    "interactive-quiz"
+  ],
+  "author": "HokageItachi",
+  "license": "MIT"
+}

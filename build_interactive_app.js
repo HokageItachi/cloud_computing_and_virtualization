@@ -42,6 +42,7 @@ function inlineMd(md) {
 }
 
 function mdToHtml(md) {
+  if (!md) return "";
   const lines = md.split(/\r?\n/);
   const out = [];
   let inFence = false, fenceBuf = [], fenceLang = "";
@@ -178,7 +179,7 @@ const UNIT_TITLES = {
   3: "Unit III — Cloud Architecture, SOA & Cloudonomics",
   4: "Unit IV — AWS Fundamentals, IAM & Security",
   5: "Unit V — AWS Compute, EC2 & Containers",
-  6: "Unit VI — AWS Storage & Databases"
+  6: "Unit VI — AWS Storage & Database Services"
 };
 
 const allMCQs = [];
@@ -186,7 +187,7 @@ const allShortAnswers = [];
 const allLongAnswers = [];
 
 for (let u = 1; u <= 6; u++) {
-  const filePath = path.join(ROOT, "Unit_" + u, "Unit_" + u + "_Questions.md");
+  const filePath = path.join(ROOT, `Unit_${u}`, `Unit_${u}_Questions.md`);
   if (!fs.existsSync(filePath)) continue;
   const content = fs.readFileSync(filePath, "utf8");
 
@@ -255,7 +256,7 @@ for (let u = 1; u <= 6; u++) {
       marks: "3–5 Marks",
       num: parseInt(saMatch[1], 10),
       question: saMatch[2].trim(),
-      answer: saMatch[3].trim()
+      answer: mdToHtml(saMatch[3].trim())
     });
   }
 
@@ -271,7 +272,7 @@ for (let u = 1; u <= 6; u++) {
       marks: "8–10 Marks",
       num: parseInt(laMatch[1], 10),
       question: laMatch[2].trim(),
-      answer: laMatch[3].trim()
+      answer: mdToHtml(laMatch[3].trim())
     });
   }
 }
@@ -293,10 +294,10 @@ for (let u = 1; u <= 6; u++) {
 }
 
 const homeHtml = loadMdHtml("README.md");
-const courseMapHtml = loadMdHtml("Course_Map.md");
 const practicalsHtml = loadMdHtml("Practicals/Practicals_Step_By_Step.md");
 const examPapersHtml = loadMdHtml("CSE423_Model_Exam_Paper.md");
 const glossaryHtml = loadMdHtml("Glossary_of_Cloud_Terms.md");
+const courseMapHtml = loadMdHtml("Course_Map.md");
 const topicFlowHtml = loadMdHtml("Unit_Topic_Flow.md");
 
 console.log(`Parsed ${allMCQs.length} MCQs, ${allShortAnswers.length} Short Answers, ${allLongAnswers.length} Long Answers.`);
@@ -304,6 +305,14 @@ console.log(`Parsed ${allMCQs.length} MCQs, ${allShortAnswers.length} Short Answ
 // ---------------------------------------------------------------------------
 // Portal App HTML Template
 // ---------------------------------------------------------------------------
+const DATA_JSON_STRING = JSON.stringify({
+  mcqs: allMCQs,
+  shortAnswers: allShortAnswers,
+  longAnswers: allLongAnswers,
+  notes: notesHtml,
+  cheatSheets: cheatSheetHtml
+}).replace(/<\/script/gi, '<\\/script');
+
 const PORTAL_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -372,9 +381,6 @@ body.light {
   --danger-soft: rgba(220, 38, 38, 0.1);
   
   --code-bg: #f1f5f9;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -400,6 +406,19 @@ body {
   min-height: 100vh;
 }
 
+/* Backdrop for mobile drawer */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 38;
+}
+.sidebar-backdrop.active {
+  display: block;
+}
+
 /* Sidebar */
 .sidebar {
   width: 290px;
@@ -411,7 +430,7 @@ body {
   top: 0;
   height: 100vh;
   z-index: 40;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-header {
@@ -644,12 +663,16 @@ body {
 
 /* Page Header Banner */
 .page-header {
-  margin-bottom: 28px;
-  padding-bottom: 18px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.page-header h2 {
+.page-header-text h2 {
   font-size: 26px;
   font-weight: 800;
   color: var(--text-main);
@@ -658,10 +681,32 @@ body {
   gap: 12px;
 }
 
-.page-header p {
+.page-header-text p {
   color: var(--text-muted);
   font-size: 14px;
   margin-top: 6px;
+}
+
+.header-action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.header-action-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Filter / Controls Bar */
@@ -692,13 +737,18 @@ body {
   border-color: var(--primary);
 }
 
-.search-input {
+.search-box-wrap {
+  position: relative;
   flex: 1;
   min-width: 200px;
+}
+
+.search-input {
+  width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 8px 14px;
+  padding: 8px 30px 8px 14px;
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   outline: none;
@@ -706,6 +756,61 @@ body {
 
 .search-input:focus {
   border-color: var(--primary);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  display: none;
+}
+.search-clear-btn:hover {
+  color: var(--text-main);
+}
+
+/* Filter Pills Bar */
+.filter-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.pill-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pill-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+}
+
+.pill-btn.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
 }
 
 /* Mode Switcher Tabs */
@@ -743,7 +848,7 @@ body {
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mcq-card:hover {
@@ -780,6 +885,11 @@ body {
 .badge-qnum {
   background: var(--primary-soft);
   color: var(--primary);
+}
+
+.badge-marks {
+  background: var(--warn-soft);
+  color: var(--warn);
 }
 
 .bookmark-btn {
@@ -826,7 +936,7 @@ body {
   font-size: 14px;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   position: relative;
 }
 
@@ -899,27 +1009,30 @@ body {
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* Exam Mode Controls */
 .exam-summary-bar {
-  display: none;
-  background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
-  border: 1px solid var(--primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 16px 20px;
+  padding: 14px 20px;
   margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 76px;
+  z-index: 25;
+  box-shadow: var(--shadow-md);
 }
 
 .exam-timer {
   font-family: var(--font-mono);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--warn);
 }
 
@@ -927,50 +1040,51 @@ body {
   background: var(--primary);
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: var(--radius-sm);
   font-weight: 600;
+  font-size: 13.5px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-primary:hover {
   background: var(--primary-hover);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-main);
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .btn-secondary:hover {
-  border-color: var(--text-dim);
   background: var(--bg-card-hover);
+  border-color: var(--text-dim);
 }
 
-/* Exam Results Modal Card */
 .score-card {
   background: var(--bg-surface);
   border: 2px solid var(--primary);
   border-radius: var(--radius-lg);
   padding: 32px;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   box-shadow: var(--shadow-lg);
 }
 
 .score-number {
-  font-size: 54px;
+  font-size: 48px;
   font-weight: 900;
   color: var(--primary);
-  line-height: 1;
-  margin: 12px 0;
+  margin: 12px 0 8px;
 }
 
 /* ---------------- Summative Q&A Component ---------------- */
@@ -981,11 +1095,6 @@ body {
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.2s ease;
-}
-
-.qa-card:hover {
-  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .qa-header {
@@ -995,14 +1104,9 @@ body {
   margin-bottom: 12px;
 }
 
-.badge-marks {
-  background: var(--warn-soft);
-  color: var(--warn);
-}
-
 .qa-question {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 16.5px;
+  font-weight: 600;
   color: var(--text-main);
   line-height: 1.5;
   margin-bottom: 16px;
@@ -1012,10 +1116,10 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--accent);
-  font-size: 13.5px;
-  font-weight: 600;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -1038,16 +1142,26 @@ body {
   color: var(--text-main);
   line-height: 1.7;
   font-size: 14.5px;
-  white-space: pre-line;
 }
+.qa-answer p { margin-bottom: 12px; }
+.qa-answer p:last-child { margin-bottom: 0; }
+.qa-answer ul, .qa-answer ol { margin: 10px 0 14px 24px; }
+.qa-answer li { margin-bottom: 6px; }
+.qa-answer code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 13.5px; color: var(--accent); }
+.qa-answer pre { background: var(--code-bg); padding: 14px; border-radius: var(--radius-md); overflow-x: auto; margin: 14px 0; }
+.qa-answer .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+.qa-answer table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.qa-answer th, .qa-answer td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
+.qa-answer th { background: var(--bg-surface); }
 
 .self-assess-bar {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--border);
+  flex-wrap: wrap;
 }
 
 .self-assess-label {
@@ -1057,69 +1171,105 @@ body {
 }
 
 .rate-btn {
-  background: var(--bg-surface);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
-  font-size: 12px;
-  cursor: pointer;
   color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
   transition: all 0.15s ease;
+}
+
+.rate-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
 }
 
 .rate-btn.active-green {
   background: var(--primary-soft);
-  border-color: var(--primary);
   color: var(--primary);
-  font-weight: 700;
+  border-color: var(--primary);
+  font-weight: 600;
 }
 
 .rate-btn.active-yellow {
   background: var(--warn-soft);
-  border-color: var(--warn);
   color: var(--warn);
-  font-weight: 700;
+  border-color: var(--warn);
+  font-weight: 600;
 }
 
 .rate-btn.active-red {
   background: var(--danger-soft);
-  border-color: var(--danger);
   color: var(--danger);
-  font-weight: 700;
+  border-color: var(--danger);
+  font-weight: 600;
 }
 
-/* ---------------- Reader / Study Notes Markdown View ---------------- */
+/* ---------------- Notes / Markdown Typography ---------------- */
 .notes-container {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 36px 42px;
+  padding: 36px 40px;
+  line-height: 1.75;
   box-shadow: var(--shadow-sm);
 }
 
-.notes-container h1 { font-size: 28px; margin-bottom: 20px; color: var(--text-main); }
-.notes-container h2 { font-size: 21px; margin: 32px 0 14px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-.notes-container h3 { font-size: 17px; margin: 22px 0 10px; color: var(--accent); }
-.notes-container h4 { font-size: 15px; margin: 18px 0 8px; color: var(--warn); }
-.notes-container p { margin: 12px 0; color: var(--text-muted); line-height: 1.7; }
-.notes-container ul, .notes-container ol { margin: 12px 0; padding-left: 26px; color: var(--text-muted); }
-.notes-container li { margin: 6px 0; }
-.notes-container blockquote {
-  border-left: 4px solid var(--primary);
-  background: var(--primary-soft);
-  padding: 14px 20px;
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  margin: 18px 0;
+.notes-container h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.notes-container h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.notes-container h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 24px 0 12px;
+}
+
+.notes-container p {
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}
+
+.notes-container strong {
   color: var(--text-main);
 }
+
+.notes-container ul, .notes-container ol {
+  margin: 12px 0 18px 26px;
+  color: var(--text-muted);
+}
+
+.notes-container li {
+  margin-bottom: 8px;
+}
+
 .notes-container code {
-  font-family: var(--font-mono);
   background: var(--code-bg);
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 4px;
+  font-family: var(--font-mono);
   font-size: 0.9em;
   color: var(--accent);
 }
+
 .notes-container pre {
   background: var(--code-bg);
   padding: 16px 20px;
@@ -1128,22 +1278,26 @@ body {
   border: 1px solid var(--border);
   margin: 16px 0;
 }
+
 .notes-container pre code {
   background: transparent;
   padding: 0;
   color: var(--text-main);
 }
+
 .notes-container .tbl-wrap {
   overflow-x: auto;
   margin: 20px 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
+
 .notes-container table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
+
 .notes-container th {
   background: var(--bg-card);
   color: var(--text-main);
@@ -1151,16 +1305,68 @@ body {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
 }
+
 .notes-container td {
   padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   color: var(--text-muted);
 }
+
 .notes-container tr:last-child td { border-bottom: none; }
+
 .notes-container hr {
   border: none;
   border-top: 1px solid var(--border);
   margin: 32px 0;
+}
+
+/* Unit Navigation Buttons (Bottom of Notes/CheatSheet) */
+.unit-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+}
+
+/* Floating Back To Top Button */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  transform: translateY(-3px);
 }
 
 /* Responsive */
@@ -1185,10 +1391,50 @@ body {
   .notes-container {
     padding: 22px 18px;
   }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Print Optimization */
+@media print {
+  .sidebar, .topbar, .filter-bar, .self-assess-bar, .reveal-answer-btn, .mode-switcher, .back-to-top-btn, .sidebar-backdrop, .unit-nav-footer, .header-action-btn {
+    display: none !important;
+  }
+  .main-wrapper {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .content-area {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  .tab-pane {
+    display: block !important;
+  }
+  .tab-pane:not(.active) {
+    display: none !important;
+  }
+  .qa-answer {
+    display: block !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .notes-container, .mcq-card, .qa-card {
+    border: 1px solid #ccc !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: #000 !important;
+  }
 }
 </style>
 </head>
 <body>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
 <div class="app-container">
   <!-- Sidebar -->
@@ -1277,7 +1523,7 @@ body {
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">☰</button>
         <div class="breadcrumb">
           Course: <strong>CSE423 (Credits: 3)</strong> &bull; <span id="currentViewName">Interactive MCQs</span>
         </div>
@@ -1294,8 +1540,11 @@ body {
       <!-- ================= TAB 1: INTERACTIVE MCQs ================= -->
       <section class="tab-pane active" id="tab-mcq">
         <div class="page-header">
-          <h2><span>🧠</span> Interactive Multiple Choice Questions</h2>
-          <p>Master all 60 high-yield questions covering Units I–VI. Switch between immediate Practice Mode and scored Mock Exam Mode.</p>
+          <div class="page-header-text">
+            <h2><span>🧠</span> Interactive Multiple Choice Questions</h2>
+            <p>Master all 60 high-yield questions covering Units I–VI. Switch between immediate Practice Mode and scored Mock Exam Mode.</p>
+          </div>
+          <button class="header-action-btn" id="btn-quick-quiz">⚡ Random 10 Quiz</button>
         </div>
 
         <!-- Filter & Control Bar -->
@@ -1311,7 +1560,10 @@ body {
             <option value="6">Unit VI — AWS Storage &amp; Databases (10)</option>
           </select>
 
-          <input type="text" class="search-input" id="mcq-search" placeholder="Search questions by keyword...">
+          <div class="search-box-wrap">
+            <input type="text" class="search-input" id="mcq-search" placeholder="Search questions or options by keyword...">
+            <button class="search-clear-btn" id="mcq-search-clear" title="Clear Search">✕</button>
+          </div>
 
           <div class="mode-switcher">
             <button class="mode-btn active" id="btn-mode-practice">Practice Mode</button>
@@ -1319,6 +1571,15 @@ body {
           </div>
 
           <button class="btn-secondary" id="btn-reset-mcqs" style="padding:6px 12px; font-size:12.5px">Reset Answers</button>
+
+          <!-- Status Filter Pills -->
+          <div class="filter-pills-row" id="mcq-status-pills">
+            <button class="pill-btn active" data-status="all">All (<span id="pill-count-all">60</span>)</button>
+            <button class="pill-btn" data-status="bookmarked">★ Starred (<span id="pill-count-bookmarked">0</span>)</button>
+            <button class="pill-btn" data-status="wrong">❌ Needs Review (<span id="pill-count-wrong">0</span>)</button>
+            <button class="pill-btn" data-status="correct">✅ Mastered (<span id="pill-count-correct">0</span>)</button>
+            <button class="pill-btn" data-status="unanswered">⚪ Unanswered (<span id="pill-count-unanswered">60</span>)</button>
+          </div>
         </div>
 
         <!-- Exam Timer / Score Bar (Shown in Exam Mode) -->
@@ -1326,6 +1587,7 @@ body {
           <div style="display:flex; align-items:center; gap:16px;">
             <span style="font-size:14px; font-weight:600;">⏱ Time Remaining:</span>
             <span class="exam-timer" id="examTimer">20:00</span>
+            <span style="font-size:13px; color:var(--text-muted); margin-left:12px;" id="exam-progress-counter">Answered: 0/60</span>
           </div>
           <div style="display:flex; gap:10px;">
             <button class="btn-primary" id="btn-submit-exam">Submit Exam</button>
@@ -1337,9 +1599,10 @@ body {
           <div class="badge" style="background:var(--primary-soft); color:var(--primary);">Exam Completed</div>
           <div class="score-number" id="resultScore">0 / 0</div>
           <p id="resultFeedback" style="font-size:16px; color:var(--text-muted); margin-bottom:18px;">Great job completing the exam!</p>
-          <div style="display:flex; justify-content:center; gap:12px;">
-            <button class="btn-primary" id="btn-review-exam">Review Mistakes</button>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn-primary" id="btn-review-exam">Review Missed Questions</button>
             <button class="btn-secondary" id="btn-retake-exam">Retake Exam</button>
+            <button class="btn-secondary" id="btn-back-to-practice">Return to Practice Mode</button>
           </div>
         </div>
 
@@ -1352,13 +1615,16 @@ body {
       <!-- ================= TAB 2: SUMMATIVE Q&As ================= -->
       <section class="tab-pane" id="tab-qa">
         <div class="page-header">
-          <h2><span>✍️</span> Summative Short &amp; Long Answer Questions</h2>
-          <p>Comprehensive university-style analytical questions with detailed model answers, step-by-step solutions, and self-assessment mastery tracking.</p>
+          <div class="page-header-text">
+            <h2><span>✍️</span> Summative Short &amp; Long Answer Questions</h2>
+            <p>Comprehensive university-style analytical questions with detailed model answers, step-by-step solutions, and self-assessment mastery tracking.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-qa">🖨️ Print / Save PDF</button>
         </div>
 
         <!-- QA Filter Bar -->
         <div class="filter-bar">
-          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Filter By:</label>
+          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Unit:</label>
           <select class="filter-select" id="qa-unit-filter">
             <option value="all">All Units (48 Questions)</option>
             <option value="1">Unit I (8 Questions)</option>
@@ -1370,12 +1636,23 @@ body {
           </select>
 
           <select class="filter-select" id="qa-type-filter">
-            <option value="all">All Question Types</option>
+            <option value="all">All Types (SA + LA)</option>
             <option value="Short Answer">Short Answers (3–5 Marks)</option>
             <option value="Long Answer">Long Answers (8–10 Marks)</option>
           </select>
 
-          <input type="text" class="search-input" id="qa-search" placeholder="Filter questions by topic (e.g. vMotion, SLA, EFS)...">
+          <select class="filter-select" id="qa-mastery-filter">
+            <option value="all">All Mastery Levels</option>
+            <option value="mastered">🟢 Mastered Only</option>
+            <option value="reviewing">🟡 Reviewing Only</option>
+            <option value="learning">🔴 Learning Only</option>
+            <option value="unrated">⚪ Unrated Only</option>
+          </select>
+
+          <div class="search-box-wrap">
+            <input type="text" class="search-input" id="qa-search" placeholder="Filter questions by topic (e.g. vMotion, SLA, EFS)...">
+            <button class="search-clear-btn" id="qa-search-clear" title="Clear Search">✕</button>
+          </div>
 
           <button class="btn-secondary" id="btn-expand-all-qa" style="padding:6px 12px; font-size:12.5px">Expand All</button>
           <button class="btn-secondary" id="btn-collapse-all-qa" style="padding:6px 12px; font-size:12.5px">Collapse All</button>
@@ -1390,8 +1667,11 @@ body {
       <!-- ================= TAB 3: CHEAT SHEETS ================= -->
       <section class="tab-pane" id="tab-cheatsheet">
         <div class="page-header">
-          <h2><span>⚡</span> High-Yield Revision Cheat Sheets</h2>
-          <p>One-page condensed summaries with key definitions, formulas, memory aids, and carry-away exam takeaways.</p>
+          <div class="page-header-text">
+            <h2><span>⚡</span> High-Yield Revision Cheat Sheets</h2>
+            <p>One-page condensed summaries with key definitions, formulas, memory aids, and carry-away exam takeaways.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-cheatsheet">🖨️ Print / Save PDF</button>
         </div>
 
         <div class="filter-bar">
@@ -1406,16 +1686,26 @@ body {
           </select>
         </div>
 
-        <div class="notes-container" id="cheatsheet-content">
-          <!-- Dynamic Cheat Sheet HTML Loaded -->
+        <div class="notes-container">
+          <div id="cheatsheet-content">
+            <!-- Dynamic Cheat Sheet HTML Loaded -->
+          </div>
+          <div class="unit-nav-footer">
+            <button class="btn-secondary" id="cs-prev-btn">← Previous Unit</button>
+            <span style="font-size:13px; color:var(--text-muted);" id="cs-unit-indicator">Unit 1 of 6</span>
+            <button class="btn-secondary" id="cs-next-btn">Next Unit →</button>
+          </div>
         </div>
       </section>
 
       <!-- ================= TAB 4: STUDY NOTES ================= -->
       <section class="tab-pane" id="tab-notes">
         <div class="page-header">
-          <h2 id="notes-title"><span>📖</span> Unit Study Notes</h2>
-          <p id="notes-subtitle">Full in-depth syllabus textbook notes, architecture diagrams, and real-world guidelines.</p>
+          <div class="page-header-text">
+            <h2 id="notes-title"><span>📖</span> Unit Study Notes</h2>
+            <p id="notes-subtitle">Full in-depth syllabus textbook notes, architecture diagrams, and real-world guidelines.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-notes">🖨️ Print / Save PDF</button>
         </div>
 
         <div class="filter-bar">
@@ -1430,16 +1720,26 @@ body {
           </select>
         </div>
 
-        <div class="notes-container" id="notes-content">
-          <!-- Dynamic Unit Notes HTML Loaded -->
+        <div class="notes-container">
+          <div id="notes-content">
+            <!-- Dynamic Unit Notes HTML Loaded -->
+          </div>
+          <div class="unit-nav-footer">
+            <button class="btn-secondary" id="notes-prev-btn">← Previous Unit</button>
+            <span style="font-size:13px; color:var(--text-muted);" id="notes-unit-indicator">Unit 1 of 6</span>
+            <button class="btn-secondary" id="notes-next-btn">Next Unit →</button>
+          </div>
         </div>
       </section>
 
       <!-- ================= TAB 5: PRACTICALS & VIVA ================= -->
       <section class="tab-pane" id="tab-practicals">
         <div class="page-header">
-          <h2><span>🛠️</span> Practicals 1–8 Lab Manual &amp; Viva-Voce Q&amp;As</h2>
-          <p>Complete step-by-step procedures, CLI commands, and oral exam viva questions with model answers for all 8 syllabus practicals.</p>
+          <div class="page-header-text">
+            <h2><span>🛠️</span> Practicals 1–8 Lab Manual &amp; Viva-Voce Q&amp;As</h2>
+            <p>Complete step-by-step procedures, CLI commands, and oral exam viva questions with model answers for all 8 syllabus practicals.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-practicals">🖨️ Print / Save PDF</button>
         </div>
         <div class="notes-container">
           ${practicalsHtml}
@@ -1449,8 +1749,11 @@ body {
       <!-- ================= TAB 6: MODEL EXAM PAPERS ================= -->
       <section class="tab-pane" id="tab-exams">
         <div class="page-header">
-          <h2><span>📝</span> Mid-Term &amp; End-Term Model Exam Papers</h2>
-          <p>Full question papers with marking schemes and complete solutions mapped to Course Outcomes (CO1–CO6) and Bloom's taxonomy.</p>
+          <div class="page-header-text">
+            <h2><span>📝</span> Mid-Term &amp; End-Term Model Exam Papers</h2>
+            <p>Full question papers with marking schemes and complete solutions mapped to Course Outcomes (CO1–CO6) and Bloom's taxonomy.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-exams">🖨️ Print / Save PDF</button>
         </div>
         <div class="notes-container">
           ${examPapersHtml}
@@ -1460,8 +1763,11 @@ body {
       <!-- ================= TAB 7: GLOSSARY ================= -->
       <section class="tab-pane" id="tab-glossary">
         <div class="page-header">
-          <h2><span>📚</span> Cloud &amp; Virtualization Glossary</h2>
-          <p>Quick-reference dictionary covering over 150 essential cloud and virtualization terms grouped by theme.</p>
+          <div class="page-header-text">
+            <h2><span>📚</span> Cloud &amp; Virtualization Glossary</h2>
+            <p>Quick-reference dictionary covering over 150 essential cloud and virtualization terms grouped by theme.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-glossary">🖨️ Print / Save PDF</button>
         </div>
         <div class="notes-container">
           ${glossaryHtml}
@@ -1471,8 +1777,11 @@ body {
       <!-- ================= TAB 8: SYLLABUS & MIND MAPS ================= -->
       <section class="tab-pane" id="tab-overview">
         <div class="page-header">
-          <h2><span>🗺️</span> Course Syllabus, Outcomes &amp; Mind Maps</h2>
-          <p>Visual dependency maps, Course Outcomes (CO1–CO6), textbook references, and syllabus flow.</p>
+          <div class="page-header-text">
+            <h2><span>🗺️</span> Course Syllabus, Outcomes &amp; Mind Maps</h2>
+            <p>Visual dependency maps, Course Outcomes (CO1–CO6), textbook references, and syllabus flow.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-overview">🖨️ Print / Save PDF</button>
         </div>
         <div class="notes-container">
           ${courseMapHtml}
@@ -1486,39 +1795,60 @@ body {
   </div>
 </div>
 
+<!-- Floating Back to Top Button -->
+<button class="back-to-top-btn" id="backToTopBtn" title="Back to top">↑</button>
+
 <!-- Raw Embedded Data -->
 <script>
-window.CSE423_DATA = {
-  mcqs: ${JSON.stringify(allMCQs)},
-  shortAnswers: ${JSON.stringify(allShortAnswers)},
-  longAnswers: ${JSON.stringify(allLongAnswers)},
-  notes: ${JSON.stringify(notesHtml)},
-  cheatSheets: ${JSON.stringify(cheatSheetHtml)}
-};
+window.CSE423_DATA = ${DATA_JSON_STRING};
 </script>
 
 <!-- Application Engine Script -->
 <script>
 (function() {
   'use strict';
-  const data = window.CSE423_DATA;
+  const data = window.CSE423_DATA || { mcqs: [], shortAnswers: [], longAnswers: [], notes: {}, cheatSheets: {} };
+
+  // Safe localStorage Helpers
+  function safeGet(key, def) {
+    try {
+      const val = localStorage.getItem(key);
+      return val ? JSON.parse(val) : def;
+    } catch (e) {
+      console.warn('Error reading ' + key + ' from localStorage:', e);
+      return def;
+    }
+  }
+
+  function safeSet(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) {
+      console.warn('Error writing ' + key + ' to localStorage:', e);
+    }
+  }
+
   let activeTab = 'tab-mcq';
   let currentUnitNotes = 1;
   let currentUnitCheatSheet = 1;
   let isExamMode = false;
   let examTimeSeconds = 20 * 60;
   let timerInterval = null;
-  let userMCQAnswers = JSON.parse(localStorage.getItem('cse423_mcq_answers') || '{}');
-  let userBookmarks = JSON.parse(localStorage.getItem('cse423_bookmarks') || '[]');
-  let userQARatings = JSON.parse(localStorage.getItem('cse423_qa_ratings') || '{}');
+  let activeMCQStatusFilter = 'all';
 
-  // Elements
+  let userMCQAnswers = safeGet('cse423_mcq_answers', {});
+  let userBookmarks = safeGet('cse423_bookmarks', []);
+  let userQARatings = safeGet('cse423_qa_ratings', {});
+
+  // DOM Elements
   const sidebar = document.getElementById('sidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const themeToggle = document.getElementById('themeToggle');
   const currentViewName = document.getElementById('currentViewName');
   const navButtons = document.querySelectorAll('.nav-btn');
   const tabPanes = document.querySelectorAll('.tab-pane');
+  const backToTopBtn = document.getElementById('backToTopBtn');
 
   // Navigation Logic
   function switchTab(tabId, unit) {
@@ -1555,7 +1885,17 @@ window.CSE423_DATA = {
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    closeMobileSidebar();
+  }
+
+  function closeMobileSidebar() {
     sidebar.classList.remove('open');
+    sidebarBackdrop.classList.remove('active');
+  }
+
+  function openMobileSidebar() {
+    sidebar.classList.add('open');
+    sidebarBackdrop.classList.add('active');
   }
 
   navButtons.forEach(btn => {
@@ -1566,61 +1906,173 @@ window.CSE423_DATA = {
     });
   });
 
-  mobileMenuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+  mobileMenuBtn.addEventListener('click', () => {
+    if (sidebar.classList.contains('open')) closeMobileSidebar();
+    else openMobileSidebar();
+  });
+  sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+  // Floating Back to Top Button
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTopBtn.classList.add('visible');
+    } else {
+      backToTopBtn.classList.remove('visible');
+    }
+  });
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Print Handlers
+  ['btn-print-notes', 'btn-print-cheatsheet', 'btn-print-qa', 'btn-print-practicals', 'btn-print-exams', 'btn-print-glossary', 'btn-print-overview'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', () => window.print());
+  });
 
   // Theme Management
   function applyTheme(isLight) {
     document.body.classList.toggle('light', isLight);
     themeToggle.textContent = isLight ? '☼' : '☾';
-    localStorage.setItem('cse423_theme', isLight ? 'light' : 'dark');
+    safeSet('cse423_theme', isLight ? 'light' : 'dark');
   }
-  const savedTheme = localStorage.getItem('cse423_theme');
+  const savedTheme = safeGet('cse423_theme', 'dark');
   if (savedTheme === 'light') applyTheme(true);
   themeToggle.addEventListener('click', () => applyTheme(!document.body.classList.contains('light')));
 
-  // Render Notes & CheatSheets
+  // Render Notes & Unit Navigation
   function loadUnitNotes(u) {
+    currentUnitNotes = u;
+    document.getElementById('notes-unit-select').value = u;
     document.getElementById('notes-title').innerHTML = '<span>📖</span> Unit ' + u + ' Study Notes';
     document.getElementById('notes-content').innerHTML = data.notes[u] || '<p>Content not found.</p>';
+    document.getElementById('notes-unit-indicator').textContent = 'Unit ' + u + ' of 6';
+    document.getElementById('notes-prev-btn').disabled = (u === 1);
+    document.getElementById('notes-next-btn').disabled = (u === 6);
   }
+
   document.getElementById('notes-unit-select').addEventListener('change', (e) => {
-    currentUnitNotes = parseInt(e.target.value, 10);
-    loadUnitNotes(currentUnitNotes);
+    loadUnitNotes(parseInt(e.target.value, 10));
+  });
+  document.getElementById('notes-prev-btn').addEventListener('click', () => {
+    if (currentUnitNotes > 1) loadUnitNotes(currentUnitNotes - 1);
+  });
+  document.getElementById('notes-next-btn').addEventListener('click', () => {
+    if (currentUnitNotes < 6) loadUnitNotes(currentUnitNotes + 1);
   });
 
+  // Render CheatSheets & Unit Navigation
   function loadCheatSheet(u) {
+    currentUnitCheatSheet = u;
+    document.getElementById('cheatsheet-unit-select').value = u;
     document.getElementById('cheatsheet-content').innerHTML = data.cheatSheets[u] || '<p>Content not found.</p>';
+    document.getElementById('cs-unit-indicator').textContent = 'Unit ' + u + ' of 6';
+    document.getElementById('cs-prev-btn').disabled = (u === 1);
+    document.getElementById('cs-next-btn').disabled = (u === 6);
   }
+
   document.getElementById('cheatsheet-unit-select').addEventListener('change', (e) => {
-    currentUnitCheatSheet = parseInt(e.target.value, 10);
-    loadCheatSheet(currentUnitCheatSheet);
+    loadCheatSheet(parseInt(e.target.value, 10));
+  });
+  document.getElementById('cs-prev-btn').addEventListener('click', () => {
+    if (currentUnitCheatSheet > 1) loadCheatSheet(currentUnitCheatSheet - 1);
+  });
+  document.getElementById('cs-next-btn').addEventListener('click', () => {
+    if (currentUnitCheatSheet < 6) loadCheatSheet(currentUnitCheatSheet + 1);
   });
 
   // ----------------------------------------------------
-  // MCQ Engine (Practice & Exam Modes)
+  // MCQ Engine
   // ----------------------------------------------------
   const mcqContainer = document.getElementById('mcq-list-container');
   const mcqUnitFilter = document.getElementById('mcq-unit-filter');
   const mcqSearch = document.getElementById('mcq-search');
+  const mcqSearchClear = document.getElementById('mcq-search-clear');
   const btnPractice = document.getElementById('btn-mode-practice');
   const btnExam = document.getElementById('btn-mode-exam');
   const examBar = document.getElementById('examBar');
   const examTimer = document.getElementById('examTimer');
+  const examProgressCounter = document.getElementById('exam-progress-counter');
   const btnSubmitExam = document.getElementById('btn-submit-exam');
   const examResultCard = document.getElementById('examResultCard');
 
-  function renderMCQs() {
+  function cleanOptText(text) {
+    if (!text) return '';
+    return text.replace(/^[A-D][).]/, '').trim();
+  }
+
+  function getFilteredMCQs() {
     const selectedUnit = mcqUnitFilter.value;
     const searchVal = mcqSearch.value.toLowerCase().trim();
 
-    const filtered = data.mcqs.filter(q => {
+    return data.mcqs.filter(q => {
       const matchUnit = selectedUnit === 'all' || q.unit == selectedUnit;
       const matchSearch = !searchVal || q.question.toLowerCase().includes(searchVal) || q.options.some(o => o.toLowerCase().includes(searchVal));
-      return matchUnit && matchSearch;
+
+      let matchStatus = true;
+      const userAns = userMCQAnswers[q.id];
+      if (activeMCQStatusFilter === 'bookmarked') {
+        matchStatus = userBookmarks.includes(q.id);
+      } else if (activeMCQStatusFilter === 'wrong') {
+        matchStatus = userAns !== undefined && userAns !== q.correct;
+      } else if (activeMCQStatusFilter === 'correct') {
+        matchStatus = userAns !== undefined && userAns === q.correct;
+      } else if (activeMCQStatusFilter === 'unanswered') {
+        matchStatus = userAns === undefined;
+      }
+
+      return matchUnit && matchSearch && matchStatus;
+    });
+  }
+
+  function updateMCQPillCounts() {
+    const selectedUnit = mcqUnitFilter.value;
+    const unitQuestions = data.mcqs.filter(q => selectedUnit === 'all' || q.unit == selectedUnit);
+
+    let bookmarkedCount = 0;
+    let wrongCount = 0;
+    let correctCount = 0;
+    let unansweredCount = 0;
+
+    unitQuestions.forEach(q => {
+      if (userBookmarks.includes(q.id)) bookmarkedCount++;
+      const ans = userMCQAnswers[q.id];
+      if (ans === undefined) {
+        unansweredCount++;
+      } else if (ans === q.correct) {
+        correctCount++;
+      } else {
+        wrongCount++;
+      }
     });
 
+    document.getElementById('pill-count-all').textContent = unitQuestions.length;
+    document.getElementById('pill-count-bookmarked').textContent = bookmarkedCount;
+    document.getElementById('pill-count-wrong').textContent = wrongCount;
+    document.getElementById('pill-count-correct').textContent = correctCount;
+    document.getElementById('pill-count-unanswered').textContent = unansweredCount;
+  }
+
+  function renderMCQs() {
+    const filtered = getFilteredMCQs();
+    updateMCQPillCounts();
+
     if (filtered.length === 0) {
-      mcqContainer.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim)">No questions match your filter.</div>';
+      mcqContainer.innerHTML = '<div style="text-align:center; padding:50px 20px; color:var(--text-dim); background:var(--bg-surface); border-radius:var(--radius-lg); border:1px dashed var(--border); margin:20px 0;">' +
+        '<p style="font-size:16px; margin-bottom:10px;">🔍 No questions match your current filter.</p>' +
+        '<button class="btn-secondary" id="btn-clear-mcq-filter" style="margin-top:8px;">Reset Filters</button>' +
+        '</div>';
+      const clearBtn = document.getElementById('btn-clear-mcq-filter');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          mcqUnitFilter.value = 'all';
+          mcqSearch.value = '';
+          mcqSearchClear.style.display = 'none';
+          activeMCQStatusFilter = 'all';
+          document.querySelectorAll('#mcq-status-pills .pill-btn').forEach(p => p.classList.toggle('active', p.getAttribute('data-status') === 'all'));
+          renderMCQs();
+        });
+      }
       return;
     }
 
@@ -1640,53 +2092,72 @@ window.CSE423_DATA = {
         }
 
         const disabled = (!isExamMode && hasAnswered) ? 'disabled' : '';
-        return \`
-          <button class="\${optClass}" data-qid="\${q.id}" data-opt="\${optIdx}" \${disabled}>
-            <span class="opt-marker">\${letters[optIdx]}</span>
-            <span>\${cleanOptText(opt)}</span>
-          </button>
-        \`;
+        return '<button class="' + optClass + '" data-qid="' + q.id + '" data-opt="' + optIdx + '" ' + disabled + '>' +
+          '<span class="opt-marker">' + letters[optIdx] + '</span>' +
+          '<span>' + cleanOptText(opt) + '</span>' +
+        '</button>';
       }).join('');
 
       const explDisplay = (!isExamMode && hasAnswered) ? 'block' : 'none';
 
-      return \`
-        <div class="mcq-card" id="\${q.id}">
-          <div class="mcq-header">
-            <div class="mcq-meta">
-              <span class="badge badge-unit">Unit \${q.unit}</span>
-              <span class="badge badge-qnum">Q\${q.num}</span>
-            </div>
-            <button class="bookmark-btn \${isBookmarked ? 'bookmarked' : ''}" data-qid="\${q.id}" title="Bookmark Question">★</button>
-          </div>
-          <div class="mcq-question">\${q.question}</div>
-          <div class="mcq-options">
-            \${optionsHtml}
-          </div>
-          <div class="mcq-explanation" style="display:\${explDisplay}">
-            <strong>Answer: \${['A','B','C','D'][q.correct]})</strong> \${q.explanation}
-          </div>
-        </div>
-      \`;
+      return '<div class="mcq-card" id="' + q.id + '">' +
+        '<div class="mcq-header">' +
+          '<div class="mcq-meta">' +
+            '<span class="badge badge-unit">Unit ' + q.unit + '</span>' +
+            '<span class="badge badge-qnum">Q' + q.num + '</span>' +
+          '</div>' +
+          '<button class="bookmark-btn ' + (isBookmarked ? 'bookmarked' : '') + '" data-qid="' + q.id + '" title="Star/Bookmark question">★</button>' +
+        '</div>' +
+        '<div class="mcq-question">' + q.question + '</div>' +
+        '<div class="mcq-options">' + optionsHtml + '</div>' +
+        '<div class="mcq-explanation" style="display:' + explDisplay + '">' +
+          '<strong>Answer: ' + ['A','B','C','D'][q.correct] + ')</strong> ' + q.explanation +
+        '</div>' +
+      '</div>';
     }).join('');
 
     attachMCQListeners();
     updateStats();
   }
 
-  function cleanOptText(text) {
-    if (!text) return '';
-    return text.replace(/^[A-D][).]/, '').trim();
-  }
-
   function attachMCQListeners() {
     document.querySelectorAll('.option-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const qid = btn.getAttribute('data-qid');
         const optIdx = parseInt(btn.getAttribute('data-opt'), 10);
         userMCQAnswers[qid] = optIdx;
-        localStorage.setItem('cse423_mcq_answers', JSON.stringify(userMCQAnswers));
-        renderMCQs();
+        safeSet('cse423_mcq_answers', userMCQAnswers);
+
+        if (!isExamMode) {
+          // In-place update of this question card to avoid scroll jump
+          const card = document.getElementById(qid);
+          if (card) {
+            const q = data.mcqs.find(item => item.id === qid);
+            if (q) {
+              card.querySelectorAll('.option-btn').forEach(b => {
+                const bOpt = parseInt(b.getAttribute('data-opt'), 10);
+                b.disabled = true;
+                b.classList.remove('selected', 'correct', 'wrong');
+                if (bOpt === q.correct) b.classList.add('correct');
+                else if (bOpt === optIdx) b.classList.add('wrong');
+              });
+              const expl = card.querySelector('.mcq-explanation');
+              if (expl) expl.style.display = 'block';
+            }
+          }
+          updateStats();
+          updateMCQPillCounts();
+        } else {
+          // Exam Mode: update selected state
+          const card = document.getElementById(qid);
+          if (card) {
+            card.querySelectorAll('.option-btn').forEach(b => {
+              const bOpt = parseInt(b.getAttribute('data-opt'), 10);
+              b.classList.toggle('selected', bOpt === optIdx);
+            });
+          }
+          updateExamProgressCounter();
+        }
       });
     });
 
@@ -1695,25 +2166,99 @@ window.CSE423_DATA = {
         const qid = btn.getAttribute('data-qid');
         if (userBookmarks.includes(qid)) {
           userBookmarks = userBookmarks.filter(id => id !== qid);
+          btn.classList.remove('bookmarked');
         } else {
           userBookmarks.push(qid);
+          btn.classList.add('bookmarked');
         }
-        localStorage.setItem('cse423_bookmarks', JSON.stringify(userBookmarks));
-        renderMCQs();
+        safeSet('cse423_bookmarks', userBookmarks);
+        updateMCQPillCounts();
+        if (activeMCQStatusFilter === 'bookmarked') renderMCQs();
       });
     });
   }
 
-  mcqUnitFilter.addEventListener('change', renderMCQs);
-  mcqSearch.addEventListener('input', renderMCQs);
+  // Status Pills Click
+  document.querySelectorAll('#mcq-status-pills .pill-btn').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#mcq-status-pills .pill-btn').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeMCQStatusFilter = pill.getAttribute('data-status');
+      renderMCQs();
+    });
+  });
+
+  mcqUnitFilter.addEventListener('change', () => {
+    renderMCQs();
+    if (isExamMode) startExamTimer();
+  });
+
+  mcqSearch.addEventListener('input', () => {
+    mcqSearchClear.style.display = mcqSearch.value ? 'block' : 'none';
+    renderMCQs();
+  });
+
+  mcqSearchClear.addEventListener('click', () => {
+    mcqSearch.value = '';
+    mcqSearchClear.style.display = 'none';
+    renderMCQs();
+  });
 
   document.getElementById('btn-reset-mcqs').addEventListener('click', () => {
-    if (confirm('Reset all saved MCQ answers and test results?')) {
+    if (confirm('Reset all saved MCQ answers and mock test scores?')) {
       userMCQAnswers = {};
       localStorage.removeItem('cse423_mcq_answers');
       examResultCard.style.display = 'none';
       renderMCQs();
     }
+  });
+
+  // Quick 10 Random Quiz
+  document.getElementById('btn-quick-quiz').addEventListener('click', () => {
+    mcqUnitFilter.value = 'all';
+    mcqSearch.value = '';
+    activeMCQStatusFilter = 'all';
+    document.querySelectorAll('#mcq-status-pills .pill-btn').forEach(p => p.classList.toggle('active', p.getAttribute('data-status') === 'all'));
+    
+    // Select 10 random questions
+    const shuffled = [...data.mcqs].sort(() => 0.5 - Math.random()).slice(0, 10);
+    mcqContainer.innerHTML = shuffled.map(q => {
+      const isBookmarked = userBookmarks.includes(q.id);
+      const userAnswer = userMCQAnswers[q.id];
+      const hasAnswered = userAnswer !== undefined;
+
+      const optionsHtml = q.options.map((opt, optIdx) => {
+        const letters = ['A', 'B', 'C', 'D'];
+        let optClass = 'option-btn';
+        if (hasAnswered) {
+          if (optIdx === q.correct) optClass += ' correct';
+          else if (optIdx === userAnswer) optClass += ' wrong';
+        }
+        const disabled = hasAnswered ? 'disabled' : '';
+        return '<button class="' + optClass + '" data-qid="' + q.id + '" data-opt="' + optIdx + '" ' + disabled + '>' +
+          '<span class="opt-marker">' + letters[optIdx] + '</span>' +
+          '<span>' + cleanOptText(opt) + '</span>' +
+        '</button>';
+      }).join('');
+
+      return '<div class="mcq-card" id="' + q.id + '">' +
+        '<div class="mcq-header">' +
+          '<div class="mcq-meta">' +
+            '<span class="badge badge-unit">Unit ' + q.unit + '</span>' +
+            '<span class="badge badge-qnum">Quiz Question</span>' +
+          '</div>' +
+          '<button class="bookmark-btn ' + (isBookmarked ? 'bookmarked' : '') + '" data-qid="' + q.id + '">★</button>' +
+        '</div>' +
+        '<div class="mcq-question">' + q.question + '</div>' +
+        '<div class="mcq-options">' + optionsHtml + '</div>' +
+        '<div class="mcq-explanation" style="display:' + (hasAnswered ? 'block' : 'none') + '">' +
+          '<strong>Answer: ' + ['A','B','C','D'][q.correct] + ')</strong> ' + q.explanation +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    attachMCQListeners();
+    window.scrollTo({ top: mcqContainer.offsetTop - 80, behavior: 'smooth' });
   });
 
   // Mode Toggling
@@ -1737,10 +2282,28 @@ window.CSE423_DATA = {
     renderMCQs();
   });
 
+  function getActiveExamQuestions() {
+    const selectedUnit = mcqUnitFilter.value;
+    return data.mcqs.filter(q => selectedUnit === 'all' || q.unit == selectedUnit);
+  }
+
+  function updateExamProgressCounter() {
+    const questions = getActiveExamQuestions();
+    let answered = 0;
+    questions.forEach(q => {
+      if (userMCQAnswers[q.id] !== undefined) answered++;
+    });
+    examProgressCounter.textContent = 'Answered: ' + answered + ' / ' + questions.length;
+  }
+
   function startExamTimer() {
     clearInterval(timerInterval);
-    examTimeSeconds = 20 * 60;
+    const questions = getActiveExamQuestions();
+    // Allocate 1.5 minutes per question (minimum 5 mins)
+    examTimeSeconds = Math.max(300, questions.length * 90);
     updateTimerDisplay();
+    updateExamProgressCounter();
+
     timerInterval = setInterval(() => {
       examTimeSeconds--;
       if (examTimeSeconds <= 0) {
@@ -1764,19 +2327,20 @@ window.CSE423_DATA = {
     btnPractice.classList.add('active');
     btnExam.classList.remove('active');
 
+    const examQuestions = getActiveExamQuestions();
     let totalScore = 0;
-    let totalQuestions = data.mcqs.length;
+    let totalQuestions = examQuestions.length;
 
-    data.mcqs.forEach(q => {
+    examQuestions.forEach(q => {
       if (userMCQAnswers[q.id] === q.correct) totalScore++;
     });
 
-    const pct = Math.round((totalScore / totalQuestions) * 100);
+    const pct = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
     document.getElementById('resultScore').textContent = totalScore + ' / ' + totalQuestions + ' (' + pct + '%)';
     document.getElementById('resultFeedback').textContent = pct >= 80 
-      ? 'Outstanding performance! You are well prepared for the exam.' 
-      : pct >= 50 ? 'Good work! Review your missed answers below to strengthen weak areas.' 
-      : 'Keep practicing! Check the explanations below and review the Unit Notes.';
+      ? '🌟 Outstanding performance! You are exceptionally well prepared for the exam.' 
+      : pct >= 50 ? '👍 Solid work! Click "Review Missed Questions" below to master the concepts you missed.' 
+      : '📖 Keep practicing! Review the detailed model explanations below and revisit the Unit Notes.';
 
     examResultCard.style.display = 'block';
     window.scrollTo({ top: examResultCard.offsetTop - 80, behavior: 'smooth' });
@@ -1784,13 +2348,24 @@ window.CSE423_DATA = {
   }
 
   btnSubmitExam.addEventListener('click', submitExam);
+
   document.getElementById('btn-review-exam').addEventListener('click', () => {
+    activeMCQStatusFilter = 'wrong';
+    document.querySelectorAll('#mcq-status-pills .pill-btn').forEach(p => p.classList.toggle('active', p.getAttribute('data-status') === 'wrong'));
+    renderMCQs();
     mcqContainer.scrollIntoView({ behavior: 'smooth' });
   });
+
   document.getElementById('btn-retake-exam').addEventListener('click', () => {
-    userMCQAnswers = {};
-    localStorage.removeItem('cse423_mcq_answers');
+    const examQuestions = getActiveExamQuestions();
+    examQuestions.forEach(q => delete userMCQAnswers[q.id]);
+    safeSet('cse423_mcq_answers', userMCQAnswers);
     btnExam.click();
+  });
+
+  document.getElementById('btn-back-to-practice').addEventListener('click', () => {
+    examResultCard.style.display = 'none';
+    btnPractice.click();
   });
 
   // ----------------------------------------------------
@@ -1799,50 +2374,57 @@ window.CSE423_DATA = {
   const qaContainer = document.getElementById('qa-list-container');
   const qaUnitFilter = document.getElementById('qa-unit-filter');
   const qaTypeFilter = document.getElementById('qa-type-filter');
+  const qaMasteryFilter = document.getElementById('qa-mastery-filter');
   const qaSearch = document.getElementById('qa-search');
+  const qaSearchClear = document.getElementById('qa-search-clear');
   const combinedQA = [...data.shortAnswers, ...data.longAnswers];
 
   function renderQAs() {
     const selectedUnit = qaUnitFilter.value;
     const selectedType = qaTypeFilter.value;
+    const selectedMastery = qaMasteryFilter.value;
     const searchVal = qaSearch.value.toLowerCase().trim();
 
     const filtered = combinedQA.filter(q => {
       const matchUnit = selectedUnit === 'all' || q.unit == selectedUnit;
       const matchType = selectedType === 'all' || q.type === selectedType;
       const matchSearch = !searchVal || q.question.toLowerCase().includes(searchVal) || q.answer.toLowerCase().includes(searchVal);
-      return matchUnit && matchType && matchSearch;
+      
+      const rating = userQARatings[q.id] || 'unrated';
+      const matchMastery = selectedMastery === 'all' || rating === selectedMastery;
+
+      return matchUnit && matchType && matchSearch && matchMastery;
     });
 
     if (filtered.length === 0) {
-      qaContainer.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim)">No questions match your filter.</div>';
+      qaContainer.innerHTML = '<div style="text-align:center; padding:50px 20px; color:var(--text-dim); background:var(--bg-surface); border-radius:var(--radius-lg); border:1px dashed var(--border); margin:20px 0;">' +
+        '<p style="font-size:16px;">🔍 No questions match your current filters.</p>' +
+        '</div>';
       return;
     }
 
     qaContainer.innerHTML = filtered.map(q => {
-      const currentRating = userQARatings[q.id] || 'none';
-      return \`
-        <div class="qa-card" id="\${q.id}">
-          <div class="qa-header">
-            <div style="display:flex; gap:8px; align-items:center;">
-              <span class="badge badge-unit">Unit \${q.unit}</span>
-              <span class="badge badge-qnum">\${q.type === 'Short Answer' ? 'SA' : 'LA'}\${q.num}</span>
-              <span class="badge badge-marks">\${q.marks}</span>
-            </div>
-          </div>
-          <div class="qa-question">\${q.question}</div>
-          <button class="reveal-answer-btn" data-target="ans-\${q.id}">
-            <span>👁️ Reveal Model Answer</span>
-          </button>
-          <div class="qa-answer" id="ans-\${q.id}">\${q.answer}</div>
-          <div class="self-assess-bar">
-            <span class="self-assess-label">Your Mastery:</span>
-            <button class="rate-btn \${currentRating === 'mastered' ? 'active-green' : ''}" data-qid="\${q.id}" data-val="mastered">🟢 Mastered</button>
-            <button class="rate-btn \${currentRating === 'reviewing' ? 'active-yellow' : ''}" data-qid="\${q.id}" data-val="reviewing">🟡 Reviewing</button>
-            <button class="rate-btn \${currentRating === 'learning' ? 'active-red' : ''}" data-qid="\${q.id}" data-val="learning">🔴 Learning</button>
-          </div>
-        </div>
-      \`;
+      const currentRating = userQARatings[q.id] || 'unrated';
+      return '<div class="qa-card" id="' + q.id + '">' +
+        '<div class="qa-header">' +
+          '<div style="display:flex; gap:8px; align-items:center;">' +
+            '<span class="badge badge-unit">Unit ' + q.unit + '</span>' +
+            '<span class="badge badge-qnum">' + (q.type === 'Short Answer' ? 'SA' : 'LA') + q.num + '</span>' +
+            '<span class="badge badge-marks">' + q.marks + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="qa-question">' + q.question + '</div>' +
+        '<button class="reveal-answer-btn" data-target="ans-' + q.id + '">' +
+          '<span>👁️ Reveal Model Answer</span>' +
+        '</button>' +
+        '<div class="qa-answer" id="ans-' + q.id + '">' + q.answer + '</div>' +
+        '<div class="self-assess-bar">' +
+          '<span class="self-assess-label">Your Mastery:</span>' +
+          '<button class="rate-btn ' + (currentRating === 'mastered' ? 'active-green' : '') + '" data-qid="' + q.id + '" data-val="mastered">🟢 Mastered</button>' +
+          '<button class="rate-btn ' + (currentRating === 'reviewing' ? 'active-yellow' : '') + '" data-qid="' + q.id + '" data-val="reviewing">🟡 Reviewing</button>' +
+          '<button class="rate-btn ' + (currentRating === 'learning' ? 'active-red' : '') + '" data-qid="' + q.id + '" data-val="learning">🔴 Learning</button>' +
+        '</div>' +
+      '</div>';
     }).join('');
 
     attachQAListeners();
@@ -1869,15 +2451,39 @@ window.CSE423_DATA = {
         const qid = btn.getAttribute('data-qid');
         const val = btn.getAttribute('data-val');
         userQARatings[qid] = val;
-        localStorage.setItem('cse423_qa_ratings', JSON.stringify(userQARatings));
-        renderQAs();
+        safeSet('cse423_qa_ratings', userQARatings);
+
+        // Update rating in-place on card
+        const card = document.getElementById(qid);
+        if (card) {
+          card.querySelectorAll('.rate-btn').forEach(b => {
+            const bVal = b.getAttribute('data-val');
+            b.classList.remove('active-green', 'active-yellow', 'active-red');
+            if (bVal === val) {
+              if (val === 'mastered') b.classList.add('active-green');
+              else if (val === 'reviewing') b.classList.add('active-yellow');
+              else if (val === 'learning') b.classList.add('active-red');
+            }
+          });
+        }
+        updateStats();
       });
     });
   }
 
   qaUnitFilter.addEventListener('change', renderQAs);
   qaTypeFilter.addEventListener('change', renderQAs);
-  qaSearch.addEventListener('input', renderQAs);
+  qaMasteryFilter.addEventListener('change', renderQAs);
+
+  qaSearch.addEventListener('input', () => {
+    qaSearchClear.style.display = qaSearch.value ? 'block' : 'none';
+    renderQAs();
+  });
+  qaSearchClear.addEventListener('click', () => {
+    qaSearch.value = '';
+    qaSearchClear.style.display = 'none';
+    renderQAs();
+  });
 
   document.getElementById('btn-expand-all-qa').addEventListener('click', () => {
     document.querySelectorAll('.qa-answer').forEach(el => el.style.display = 'block');
@@ -1915,9 +2521,17 @@ window.CSE423_DATA = {
 
     const totalItems = totalMCQs + combinedQA.length;
     const completedItems = correctCount + masteredCount;
-    const overallPct = Math.round((completedItems / totalItems) * 100);
+    const overallPct = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
     document.getElementById('sidebar-progress').textContent = overallPct + '% Complete';
   }
+
+  // Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileSidebar();
+      if (examResultCard) examResultCard.style.display = 'none';
+    }
+  });
 
   // Initial Boot
   renderMCQs();

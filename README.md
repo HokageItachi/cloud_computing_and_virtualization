@@ -1,7 +1,41 @@
-# CSE423 — Virtualization and Cloud Computing — Study Pack
+# CSE423 — Virtualization and Cloud Computing — Study Pack & Interactive Portal
 
-Complete study materials and step-by-step practical guides for the course
+Complete study materials, step-by-step practical guides, and an interactive web learning application for the course
 **CSE423: VIRTUALIZATION AND CLOUD COMPUTING** (L:2 T:0 P:1, Credits: 3).
+
+---
+
+## 🚀 Interactive Web Portal
+
+The repository includes a modern, zero-dependency, self-contained interactive web portal ([`index.html`](file:///d:/____Drive_Files/_Programming%20(P)/sem3/Cloud_computing_and_virtualization/index.html) & [`CSE423_Study_Pack.html`](file:///d:/____Drive_Files/_Programming%20(P)/sem3/Cloud_computing_and_virtualization/CSE423_Study_Pack.html)) featuring:
+
+- **🧠 Dual-Mode Interactive MCQs:** 60 high-yield questions covering Units I–VI with instant feedback (Practice Mode) and timed mock exams with automated scoring (Exam Mode). Filter by Unit, Starred/Bookmarked, Missed/Incorrect, or take a quick 10-question random quiz.
+- **✍️ Summative Q&As (48 Questions):** University-style short & long answer questions with step-by-step model answers, expand/collapse toggles, and 3-tier self-assessment mastery tracking (🟢 Mastered / 🟡 Reviewing / 🔴 Learning).
+- **⚡ High-Yield Cheat Sheets:** 1-page condensed revision summaries for rapid pre-exam prep.
+- **📖 Full Unit Notes:** Comprehensive textbook-level theory with architecture diagrams, comparisons, and exam formulas.
+- **🛠️ Practicals 1–8 Manual & Viva Voce:** Step-by-step procedures, cloud scripts, policies, and oral viva Q&As.
+- **🖨️ Print & PDF Ready:** 1-click printable format for offline study with clean `@media print` styling.
+- **🌓 Dark / Light Mode:** Persistent theme selection and responsive mobile drawer navigation.
+
+### Quick Start (Run Locally)
+
+You can view the portal immediately by double-clicking `index.html` in your browser, or launch the built-in local preview server:
+
+```bash
+# Start local preview server (port 3000)
+npm start
+# or: node server.js
+
+# Regenerate portal files after editing markdown
+npm run build
+# or: node build_interactive_app.js
+
+# Run automated browser test suite
+npm test
+# or: node test_full_suite.js
+```
+
+---
 
 ## Course Outcomes (COs)
 
