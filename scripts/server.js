@@ -1,4 +1,4 @@
-// server.js
+// scripts/server.js
 // Lightweight, zero-dependency local static preview server for CSE423 Portal.
 "use strict";
 
@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
-const ROOT = __dirname;
+const ROOT = path.resolve(__dirname, "..");
 
 const MIME_TYPES = {
   ".html": "text/html; charset=UTF-8",
@@ -22,7 +22,6 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  // Normalize URL
   let reqUrl = decodeURI(req.url.split("?")[0]);
   if (reqUrl === "/" || reqUrl === "") {
     reqUrl = "/index.html";
@@ -41,8 +40,8 @@ const server = http.createServer((req, res) => {
         <!DOCTYPE html>
         <html>
         <head><title>404 Not Found</title></head>
-        <body style="font-family:system-ui; background:#0f172a; color:#f8fafc; padding:50px; text-align:center;">
-          <h1 style="color:#ef4444;">404 - File Not Found</h1>
+        <body style="font-family:system-ui; background:#080d1a; color:#f8fafc; padding:50px; text-align:center;">
+          <h1 style="color:#f43f5e;">404 - File Not Found</h1>
           <p>Requested: <code>${escapeHtml(reqUrl)}</code></p>
           <p><a href="/" style="color:#10b981;">Return to CSE423 Portal Home</a></p>
         </body>

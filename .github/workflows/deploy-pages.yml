@@ -31,7 +31,7 @@ jobs:
           node-version: 20
 
       - name: Build Latest Portal
-        run: node build_interactive_app.js
+        run: node scripts/build.js
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5

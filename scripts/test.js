@@ -1,11 +1,16 @@
+// scripts/test.js
+// Automated headless browser verification suite for CSE423 Portal.
+"use strict";
+
 const { spawn } = require("child_process");
 const path = require("path");
 
-const htmlPath = path.resolve("index.html").replace(/\\/g, "/");
+const ROOT = path.resolve(__dirname, "..");
+const htmlPath = path.join(ROOT, "index.html").replace(/\\/g, "/");
 const fileUrl = "file:///" + htmlPath;
 
 const edgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-const port = 9336;
+const port = 9338;
 
 const proc = spawn(edgePath, [
   "--headless=new",
@@ -79,7 +84,32 @@ async function run() {
     return results;
   }`);
 
-  // 2: In-place MCQ option click
+  // 2: Dynamic In-Page Outline (TOC) & Reading Meta
+  await runTest("In-Page Table of Contents & Meta", `function() {
+    document.querySelector('.nav-btn[data-tab="tab-notes"]').click();
+    const tocBox = document.querySelector('.toc-box');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    const metaBar = document.querySelector('.unit-meta-bar');
+    return {
+      hasTocBox: !!tocBox,
+      tocLinksCount: tocLinks.length,
+      hasMetaBar: !!metaBar
+    };
+  }`);
+
+  // 3: Callout Admonitions & Copy Code Blocks
+  await runTest("Callout Boxes & Code Copy Blocks", `function() {
+    const callouts = document.querySelectorAll('.callout');
+    const codeWraps = document.querySelectorAll('.code-block-wrap');
+    const copyBtns = document.querySelectorAll('.code-copy-btn');
+    return {
+      calloutsFound: callouts.length,
+      codeWrapsFound: codeWraps.length,
+      copyBtnsFound: copyBtns.length
+    };
+  }`);
+
+  // 4: In-Place Practice MCQ Click
   await runTest("In-Place Practice MCQ Click", `function() {
     document.querySelector('.nav-btn[data-tab="tab-mcq"]').click();
     const opt = document.querySelector('.option-btn[data-qid="mcq-u1-q1"][data-opt="2"]');
@@ -92,12 +122,11 @@ async function run() {
     return { isCorrectOrWrong, explVisible, accuracyText };
   }`);
 
-  // 3: MCQ Status filter pills
+  // 5: MCQ Status Filter Pills
   await runTest("MCQ Status Filter Pills", `function() {
     const starPill = document.querySelector('#mcq-status-pills .pill-btn[data-status="bookmarked"]');
     const allPill = document.querySelector('#mcq-status-pills .pill-btn[data-status="all"]');
     
-    // Bookmark first question
     const starBtn = document.querySelector('#mcq-u1-q1 .bookmark-btn');
     if (starBtn && !starBtn.classList.contains('bookmarked')) starBtn.click();
 
@@ -110,14 +139,14 @@ async function run() {
     return { countAfterStarFilter, countAfterAllFilter };
   }`);
 
-  // 4: Random 10 Quiz
+  // 6: Random 10 Quiz
   await runTest("Random 10 Quiz Button", `function() {
     document.getElementById('btn-quick-quiz').click();
     const count = document.querySelectorAll('.mcq-card').length;
     return { quizCardCount: count };
   }`);
 
-  // 5: Exam Mode Scoped Test
+  // 7: Exam Mode Scoped Test
   await runTest("Exam Mode Unit Scoping & Submit", `function() {
     document.getElementById('mcq-unit-filter').value = '2';
     document.getElementById('mcq-unit-filter').dispatchEvent(new Event('change'));
@@ -138,7 +167,7 @@ async function run() {
     return { isExamBarVisible, counterText, scoreText, cardDisplay };
   }`);
 
-  // 6: Q&A Markdown Rendering & Mastery Filter
+  // 8: Q&A Rich Formatting & Filters
   await runTest("Q&A Rich Formatting & Filters", `function() {
     document.querySelector('.nav-btn[data-tab="tab-qa"]').click();
     const firstAns = document.querySelector('#ans-sa-u1-q1');
@@ -157,19 +186,7 @@ async function run() {
     return { hasHtmlTags, isGreen, masteredVisibleCount: masteredVisible };
   }`);
 
-  // 7: Unit prev/next navigation
-  await runTest("Unit Notes Next/Prev Navigation", `function() {
-    document.querySelector('.nav-btn[data-tab="tab-notes"]').click();
-    const nextBtn = document.getElementById('notes-next-btn');
-    nextBtn.click();
-    const valAfterNext = document.getElementById('notes-unit-select').value;
-    const prevBtn = document.getElementById('notes-prev-btn');
-    prevBtn.click();
-    const valAfterPrev = document.getElementById('notes-unit-select').value;
-    return { valAfterNext, valAfterPrev };
-  }`);
-
-  // 8: Print Buttons Existence
+  // 9: Print Buttons Check
   await runTest("Print Buttons Check", `function() {
     const ids = ['btn-print-notes', 'btn-print-cheatsheet', 'btn-print-qa', 'btn-print-practicals', 'btn-print-exams', 'btn-print-glossary', 'btn-print-overview'];
     const exists = ids.every(id => !!document.getElementById(id));

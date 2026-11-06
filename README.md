@@ -22,17 +22,52 @@ The repository includes a modern, zero-dependency, self-contained interactive we
 You can view the portal immediately by double-clicking `index.html` in your browser, or launch the built-in local preview server:
 
 ```bash
-# Start local preview server (port 3000)
+# Start local preview server (serves on http://localhost:3000)
 npm start
-# or: node server.js
+# or: node scripts/server.js
 
-# Regenerate portal files after editing markdown
+# Regenerate portal bundle after editing markdown/styles
 npm run build
-# or: node build_interactive_app.js
+# or: node scripts/build.js
 
-# Run automated browser test suite
+# Run automated browser test suite (headless Microsoft Edge)
 npm test
-# or: node test_full_suite.js
+# or: node scripts/test.js
+```
+
+---
+
+## 📁 Repository Directory Structure
+
+The project is cleanly separated into dedicated directories:
+
+```text
+Cloud_computing_and_virtualization/
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml       # GitHub Actions CI/CD deploying to GitHub Pages
+├── content/                       # Cross-unit reference guides & curriculum specifications
+│   ├── Course_Map.md              # Syllabus mapping & CO coverage checklist
+│   ├── CSE423_Model_Exam_Paper.md # Mid-Term (50 Marks) & End-Term (100 Marks) papers
+│   ├── Glossary_of_Cloud_Terms.md # 150+ categorized cloud terms & definitions
+│   └── Unit_Topic_Flow.md         # Unit-wise mind maps & topic dependency diagrams
+├── Unit_1/ ... Unit_6/            # Unit curriculum folders (Notes, Questions, CheatSheets)
+├── Practicals/                    # Laboratory manual & step-by-step experiment procedures
+│   ├── Practicals_Step_By_Step.md # Experiments 1–8 procedures, CLI commands, & Viva Q&A
+│   └── assets/                    # Sample cloud configurations, policies, & scripts
+├── src/                           # Dedicated frontend application source code
+│   ├── css/
+│   │   └── style.css              # Modern responsive CSS design system & print styles
+│   ├── js/
+│   │   └── app.js                 # Pure interactive client engine (quizzes, timer, filters)
+│   └── template.html              # Clean semantic HTML application template
+├── scripts/                       # Dedicated build, server, & testing tooling
+│   ├── build.js                   # Markdown parser, question extractor, & HTML compiler
+│   ├── server.js                  # Zero-dependency local preview server
+│   └── test.js                    # Automated headless browser test verification suite
+├── index.html                     # Compiled interactive portal (GitHub Pages entry point)
+├── CSE423_Study_Pack.html         # Single-file offline portable study pack
+└── package.json                   # Project scripts and configuration
 ```
 
 ---

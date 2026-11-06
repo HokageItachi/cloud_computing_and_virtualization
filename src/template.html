@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23059669'/%3E%3Ctext x='50' y='72' font-size='60' font-family='system-ui,sans-serif' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<title>CSE423 · Cloud Computing &amp; Virtualization | Student Portal</title>
+<style>
+/* {{STYLES}} */
+</style>
+</head>
+<body>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-header">
+      <div class="brand-icon">☁</div>
+      <div class="brand-title">
+        <h1>CSE423 Portal</h1>
+        <span>Cloud &amp; Virtualization</span>
+      </div>
+    </div>
+
+    <div class="nav-scroll">
+      <div class="nav-section-title">Interactive Learning</div>
+      <button class="nav-btn active" data-tab="tab-mcq">
+        <span class="icon">🧠</span>
+        <span>Interactive MCQs</span>
+        <span class="badge-pill" id="badge-mcq-count">60</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-qa">
+        <span class="icon">✍️</span>
+        <span>Summative Q&amp;As</span>
+        <span class="badge-pill">48</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-cheatsheet">
+        <span class="icon">⚡</span>
+        <span>Cheat Sheets</span>
+        <span class="badge-pill">6</span>
+      </button>
+
+      <div class="nav-section-title">Unit Notes &amp; Theory</div>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="1">
+        <span class="icon">📖</span>
+        <span>Unit I · Virtualization</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="2">
+        <span class="icon">📖</span>
+        <span>Unit II · Cloud Models</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="3">
+        <span class="icon">📖</span>
+        <span>Unit III · Architecture</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="4">
+        <span class="icon">📖</span>
+        <span>Unit IV · AWS Fundamentals</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="5">
+        <span class="icon">📖</span>
+        <span>Unit V · AWS Compute</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-notes" data-unit="6">
+        <span class="icon">📖</span>
+        <span>Unit VI · AWS Storage/DB</span>
+      </button>
+
+      <div class="nav-section-title">Labs &amp; Examination</div>
+      <button class="nav-btn" data-tab="tab-practicals">
+        <span class="icon">🛠️</span>
+        <span>Practicals 1–8 + Viva</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-exams">
+        <span class="icon">📝</span>
+        <span>Model Exam Papers</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-glossary">
+        <span class="icon">📚</span>
+        <span>Glossary (150+ terms)</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-overview">
+        <span class="icon">🗺️</span>
+        <span>Syllabus &amp; Mind Maps</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-stat">
+        <span>Mastery Progress</span>
+        <div style="font-weight:700; color:var(--primary)" id="sidebar-progress">0% Complete</div>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">☾</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation Menu">☰</button>
+        <div class="breadcrumb">
+          Course: <strong>CSE423 (Credits: 3)</strong> &bull; <span id="currentViewName">Interactive MCQs</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="quick-stats">
+          <div class="stat-item">MCQ Accuracy: <strong id="top-accuracy">0%</strong></div>
+          <div class="stat-item">Q&amp;As Mastered: <strong id="top-qa-mastered">0/48</strong></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <!-- ================= TAB 1: INTERACTIVE MCQs ================= -->
+      <section class="tab-pane active" id="tab-mcq">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>🧠</span> Interactive Multiple Choice Questions</h2>
+            <p>Master all 60 high-yield questions covering Units I–VI. Switch between immediate Practice Mode and scored Mock Exam Mode.</p>
+          </div>
+          <button class="header-action-btn" id="btn-quick-quiz">⚡ Random 10 Quiz</button>
+        </div>
+
+        <!-- Filter & Control Bar -->
+        <div class="filter-bar">
+          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Unit Filter:</label>
+          <select class="filter-select" id="mcq-unit-filter">
+            <option value="all">All Units (60 MCQs)</option>
+            <option value="1">Unit I — Virtualization &amp; Distributed Systems (10)</option>
+            <option value="2">Unit II — Cloud Concepts &amp; Migration (10)</option>
+            <option value="3">Unit III — Architecture &amp; Cloudonomics (10)</option>
+            <option value="4">Unit IV — AWS Fundamentals &amp; IAM (10)</option>
+            <option value="5">Unit V — AWS Compute, EC2 &amp; Containers (10)</option>
+            <option value="6">Unit VI — AWS Storage &amp; Databases (10)</option>
+          </select>
+
+          <div class="search-box-wrap">
+            <input type="text" class="search-input" id="mcq-search" placeholder="Search questions or options by keyword... (Ctrl+K)">
+            <button class="search-clear-btn" id="mcq-search-clear" title="Clear Search">✕</button>
+          </div>
+
+          <div class="mode-switcher">
+            <button class="mode-btn active" id="btn-mode-practice">Practice Mode</button>
+            <button class="mode-btn" id="btn-mode-exam">Exam Mode</button>
+          </div>
+
+          <button class="btn-secondary" id="btn-reset-mcqs" style="padding:6px 12px; font-size:12.5px">Reset Answers</button>
+
+          <!-- Status Filter Pills -->
+          <div class="filter-pills-row" id="mcq-status-pills">
+            <button class="pill-btn active" data-status="all">All (<span id="pill-count-all">60</span>)</button>
+            <button class="pill-btn" data-status="bookmarked">★ Starred (<span id="pill-count-bookmarked">0</span>)</button>
+            <button class="pill-btn" data-status="wrong">❌ Needs Review (<span id="pill-count-wrong">0</span>)</button>
+            <button class="pill-btn" data-status="correct">✅ Mastered (<span id="pill-count-correct">0</span>)</button>
+            <button class="pill-btn" data-status="unanswered">⚪ Unanswered (<span id="pill-count-unanswered">60</span>)</button>
+          </div>
+        </div>
+
+        <!-- Exam Timer / Score Bar (Shown in Exam Mode) -->
+        <div class="exam-summary-bar" id="examBar" style="display:none;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <span style="font-size:14px; font-weight:600;">⏱ Time Remaining:</span>
+            <span class="exam-timer" id="examTimer">20:00</span>
+            <span style="font-size:13px; color:var(--text-muted); margin-left:12px;" id="exam-progress-counter">Answered: 0/60</span>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-primary" id="btn-submit-exam">Submit Exam</button>
+          </div>
+        </div>
+
+        <!-- Exam Results Card (Initially Hidden) -->
+        <div id="examResultCard" style="display:none;" class="score-card">
+          <div class="badge" style="background:var(--primary-soft); color:var(--primary);">Exam Completed</div>
+          <div class="score-number" id="resultScore">0 / 0</div>
+          <p id="resultFeedback" style="font-size:16px; color:var(--text-muted); margin-bottom:18px;">Great job completing the exam!</p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn-primary" id="btn-review-exam">Review Missed Questions</button>
+            <button class="btn-secondary" id="btn-retake-exam">Retake Exam</button>
+            <button class="btn-secondary" id="btn-back-to-practice">Return to Practice Mode</button>
+          </div>
+        </div>
+
+        <!-- MCQ Cards Container -->
+        <div id="mcq-list-container">
+          <!-- Dynamic MCQ Cards Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: SUMMATIVE Q&As ================= -->
+      <section class="tab-pane" id="tab-qa">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>✍️</span> Summative Short &amp; Long Answer Questions</h2>
+            <p>Comprehensive university-style analytical questions with detailed model answers, step-by-step solutions, and self-assessment mastery tracking.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-qa">🖨️ Print / Save PDF</button>
+        </div>
+
+        <!-- QA Filter Bar -->
+        <div class="filter-bar">
+          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Unit:</label>
+          <select class="filter-select" id="qa-unit-filter">
+            <option value="all">All Units (48 Questions)</option>
+            <option value="1">Unit I (8 Questions)</option>
+            <option value="2">Unit II (8 Questions)</option>
+            <option value="3">Unit III (8 Questions)</option>
+            <option value="4">Unit IV (8 Questions)</option>
+            <option value="5">Unit V (8 Questions)</option>
+            <option value="6">Unit VI (8 Questions)</option>
+          </select>
+
+          <select class="filter-select" id="qa-type-filter">
+            <option value="all">All Types (SA + LA)</option>
+            <option value="Short Answer">Short Answers (3–5 Marks)</option>
+            <option value="Long Answer">Long Answers (8–10 Marks)</option>
+          </select>
+
+          <select class="filter-select" id="qa-mastery-filter">
+            <option value="all">All Mastery Levels</option>
+            <option value="mastered">🟢 Mastered Only</option>
+            <option value="reviewing">🟡 Reviewing Only</option>
+            <option value="learning">🔴 Learning Only</option>
+            <option value="unrated">⚪ Unrated Only</option>
+          </select>
+
+          <div class="search-box-wrap">
+            <input type="text" class="search-input" id="qa-search" placeholder="Filter questions by topic (e.g. vMotion, SLA, EFS)... (Ctrl+K)">
+            <button class="search-clear-btn" id="qa-search-clear" title="Clear Search">✕</button>
+          </div>
+
+          <button class="btn-secondary" id="btn-expand-all-qa" style="padding:6px 12px; font-size:12.5px">Expand All</button>
+          <button class="btn-secondary" id="btn-collapse-all-qa" style="padding:6px 12px; font-size:12.5px">Collapse All</button>
+        </div>
+
+        <!-- QA Cards Container -->
+        <div id="qa-list-container">
+          <!-- Dynamic Q&A Cards Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: CHEAT SHEETS ================= -->
+      <section class="tab-pane" id="tab-cheatsheet">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>⚡</span> High-Yield Revision Cheat Sheets</h2>
+            <p>One-page condensed summaries with key definitions, formulas, memory aids, and carry-away exam takeaways.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-cheatsheet">🖨️ Print / Save PDF</button>
+        </div>
+
+        <div class="filter-bar">
+          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Select Unit Cheat Sheet:</label>
+          <select class="filter-select" id="cheatsheet-unit-select">
+            <option value="1">Unit I — Virtualization &amp; Distributed Computing</option>
+            <option value="2">Unit II — Cloud Concepts, NIST &amp; Migration</option>
+            <option value="3">Unit III — Cloud Architecture &amp; 10 Laws of Cloudonomics</option>
+            <option value="4">Unit IV — AWS Fundamentals, Shared Responsibility &amp; IAM</option>
+            <option value="5">Unit V — AWS Compute, EC2 &amp; Containers</option>
+            <option value="6">Unit VI — AWS Storage &amp; Database Services</option>
+          </select>
+        </div>
+
+        <div class="notes-container">
+          <div id="cheatsheet-content">
+            <!-- Dynamic Cheat Sheet HTML Loaded -->
+          </div>
+          <div class="unit-nav-footer">
+            <button class="btn-secondary" id="cs-prev-btn">← Previous Unit</button>
+            <span style="font-size:13px; color:var(--text-muted);" id="cs-unit-indicator">Unit 1 of 6</span>
+            <button class="btn-secondary" id="cs-next-btn">Next Unit →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: STUDY NOTES ================= -->
+      <section class="tab-pane" id="tab-notes">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2 id="notes-title"><span>📖</span> Unit Study Notes</h2>
+            <p id="notes-subtitle">Full in-depth syllabus textbook notes, architecture diagrams, and real-world guidelines.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-notes">🖨️ Print / Save PDF</button>
+        </div>
+
+        <div class="filter-bar">
+          <label style="font-size:13px; font-weight:600; color:var(--text-muted)">Switch Unit:</label>
+          <select class="filter-select" id="notes-unit-select">
+            <option value="1">Unit I — Virtualization Fundamentals &amp; Distributed Systems</option>
+            <option value="2">Unit II — Cloud Concepts, Models &amp; Migration</option>
+            <option value="3">Unit III — Cloud Architecture, SOA &amp; Cloudonomics</option>
+            <option value="4">Unit IV — AWS Fundamentals, IAM &amp; Security</option>
+            <option value="5">Unit V — AWS Compute Services, EC2 &amp; Containers</option>
+            <option value="6">Unit VI — AWS Storage &amp; Database Services</option>
+          </select>
+        </div>
+
+        <div class="notes-container">
+          <div id="notes-content">
+            <!-- Dynamic Unit Notes HTML Loaded with Dynamic In-Page Outline -->
+          </div>
+          <div class="unit-nav-footer">
+            <button class="btn-secondary" id="notes-prev-btn">← Previous Unit</button>
+            <span style="font-size:13px; color:var(--text-muted);" id="notes-unit-indicator">Unit 1 of 6</span>
+            <button class="btn-secondary" id="notes-next-btn">Next Unit →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: PRACTICALS & VIVA ================= -->
+      <section class="tab-pane" id="tab-practicals">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>🛠️</span> Practicals 1–8 Lab Manual &amp; Viva-Voce Q&amp;As</h2>
+            <p>Complete step-by-step procedures, CLI commands, and oral exam viva questions with model answers for all 8 syllabus practicals.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-practicals">🖨️ Print / Save PDF</button>
+        </div>
+        <div class="notes-container">
+          <!-- {{PRACTICALS_HTML}} -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: MODEL EXAM PAPERS ================= -->
+      <section class="tab-pane" id="tab-exams">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>📝</span> Mid-Term &amp; End-Term Model Exam Papers</h2>
+            <p>Full question papers with marking schemes and complete solutions mapped to Course Outcomes (CO1–CO6) and Bloom's taxonomy.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-exams">🖨️ Print / Save PDF</button>
+        </div>
+        <div class="notes-container">
+          <!-- {{EXAMPAPERS_HTML}} -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 7: GLOSSARY ================= -->
+      <section class="tab-pane" id="tab-glossary">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>📚</span> Cloud &amp; Virtualization Glossary</h2>
+            <p>Quick-reference dictionary covering over 150 essential cloud and virtualization terms grouped by theme.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-glossary">🖨️ Print / Save PDF</button>
+        </div>
+        <div class="notes-container">
+          <!-- {{GLOSSARY_HTML}} -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 8: SYLLABUS & MIND MAPS ================= -->
+      <section class="tab-pane" id="tab-overview">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2><span>🗺️</span> Course Syllabus, Outcomes &amp; Mind Maps</h2>
+            <p>Visual dependency maps, Course Outcomes (CO1–CO6), textbook references, and syllabus flow.</p>
+          </div>
+          <button class="header-action-btn" id="btn-print-overview">🖨️ Print / Save PDF</button>
+        </div>
+        <div class="notes-container">
+          <!-- {{COURSEMAP_HTML}} -->
+          <hr>
+          <!-- {{TOPICFLOW_HTML}} -->
+          <hr>
+          <!-- {{HOME_HTML}} -->
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Floating Back to Top Button -->
+<button class="back-to-top-btn" id="backToTopBtn" title="Back to top">↑</button>
+
+<!-- Toast Notification -->
+<div class="toast-msg" id="toastMsg">Notification</div>
+
+<!-- Raw Embedded Data -->
+<script>
+window.CSE423_DATA = /* {{DATA_JSON}} */;
+</script>
+
+<!-- Application Engine Script -->
+<script>
+// {{APP_SCRIPT}}
+</script>
+</body>
+</html>

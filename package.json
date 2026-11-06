@@ -1,13 +1,13 @@
 {
   "name": "cse423-cloud-computing-and-virtualization",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Interactive study portal, laboratory manual, and comprehensive study pack for CSE423: Virtualization and Cloud Computing.",
-  "main": "server.js",
+  "main": "scripts/server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "node build_interactive_app.js",
-    "test": "node test_full_suite.js",
-    "serve": "node server.js"
+    "start": "node scripts/server.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "serve": "node scripts/server.js"
   },
   "keywords": [
     "cloud-computing",
