@@ -1898,7 +1898,7 @@ window.CSE423_DATA = {
         return `
           <button class="${optClass}" data-qid="${q.id}" data-opt="${optIdx}" ${disabled}>
             <span class="opt-marker">${letters[optIdx]}</span>
-            <span>${opt.replace(/^[A-D])s*/, '')}</span>
+            <span>${cleanOptText(opt)}</span>
           </button>
         `;
       }).join('');
@@ -1927,6 +1927,11 @@ window.CSE423_DATA = {
 
     attachMCQListeners();
     updateStats();
+  }
+
+  function cleanOptText(text) {
+    if (!text) return '';
+    return text.replace(/^[A-D][).]/, '').trim();
   }
 
   function attachMCQListeners() {
