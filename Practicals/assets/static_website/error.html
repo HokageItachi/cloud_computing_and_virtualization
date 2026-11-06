@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | CSE423 Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge error">HTTP 404</div>
+      <h1>Requested Resource Not Found</h1>
+      <p class="subtitle">Custom S3 Error Handling Demonstration (Practical 7)</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Error Document Triggered</h2>
+        <p>The requested file key was not found in this Amazon S3 bucket. Because the bucket's <strong>Static Website Hosting</strong> properties configured <code>error.html</code> as the Error Document, this custom error page is returned instead of default AWS XML error responses.</p>
+        <p><a href="index.html" class="btn">Return to Home Page</a></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Course CSE423 | Academic Session 2026-27 | Virtualization & Cloud Computing</p>
+    </footer>
+  </div>
+</body>
+</html>

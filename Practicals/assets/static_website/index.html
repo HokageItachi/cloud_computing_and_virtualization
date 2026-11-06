@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSE423: Virtualization & Cloud Computing Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">AWS S3 Hosted</div>
+      <h1>CSE423: Virtualization and Cloud Computing</h1>
+      <p class="subtitle">Practical 7: Static Website Cloud Deployment Demonstration</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Deployment Verification</h2>
+        <div class="status-indicator">
+          <span class="dot online"></span>
+          <span>Status: <strong>Live & Accessible via S3 Website Endpoint</strong></span>
+        </div>
+        <p>This static website is deployed on <strong>Amazon Simple Storage Service (S3)</strong> with public read access enabled via Bucket Policy and Static Website Hosting properties configured.</p>
+      </section>
+
+      <section class="grid">
+        <div class="card mini">
+          <h3>Storage Architecture</h3>
+          <p><strong>Bucket Type:</strong> General Purpose (Object Storage)</p>
+          <p><strong>Storage Class:</strong> S3 Standard (99.999999999% Durability)</p>
+        </div>
+        <div class="card mini">
+          <h3>Routing & Delivery</h3>
+          <p><strong>Protocol:</strong> HTTP REST & Website Endpoint</p>
+          <p><strong>Index Document:</strong> <code>index.html</code></p>
+        </div>
+        <div class="card mini">
+          <h3>Security & Permissions</h3>
+          <p><strong>Public Access:</strong> Block Public Access Disabled</p>
+          <p><strong>Policy:</strong> <code>s3:GetObject</code> on <code>/*</code></p>
+        </div>
+      </section>
+
+      <section class="card info">
+        <h2>Interactive Client Verification</h2>
+        <p>Current Client Timestamp: <span id="client-time">Loading...</span></p>
+        <button id="test-btn" class="btn">Test Client-Side JavaScript</button>
+        <p id="test-output" class="output"></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Course CSE423 | Academic Session 2026-27 | Virtualization & Cloud Computing</p>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('client-time').textContent = new Date().toUTCString();
+    document.getElementById('test-btn').addEventListener('click', () => {
+      const output = document.getElementById('test-output');
+      output.textContent = 'JavaScript executed successfully in the cloud! User Agent: ' + navigator.userAgent;
+      output.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
