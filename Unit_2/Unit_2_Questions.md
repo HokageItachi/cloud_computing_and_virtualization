@@ -41,11 +41,11 @@
 - C) Repurchase
 - D) Retire
 
-**Q7.** The first step of the Seven-Step Migration Model is:
-- A) Optimize
-- B) Assess / inventory assets
+**Q7.** The first step of Buyya's Seven-Step Cloud Migration Model is:
+- A) Optimize and manage
+- B) Conduct Cloud Assessments
 - C) Cut over
-- D) Operate
+- D) Augment the applications
 
 **Q8.** Which VM migration type moves a *running* VM with no noticeable downtime?
 - A) Cold migration
@@ -87,8 +87,8 @@ Internal = inside the corporate trust boundary; External = outside it.
 **A6. A) Rehost.**
 Rehost = "lift-and-shift" (move as-is). Refactor = redesign; Repurchase = replace with SaaS; Retire = decommission.
 
-**A7. B) Assess / inventory assets.**
-The first step is inventorying servers, VMs, apps, and data before prioritizing.
+**A7. B) Conduct Cloud Assessments.**
+The first step in Buyya's Seven-Step Model is to conduct cloud assessments — evaluating technical, economic, legal, and compliance feasibility and inventorying all enterprise assets.
 
 **A8. C) Live migration (e.g., vMotion).**
 Live migration moves a running VM with minimal/zero downtime (memory pre-copy + brief pause). Cold migration requires shutdown.
@@ -154,13 +154,18 @@ Cloud middleware is software between applications and the network/OS that enable
 3. Recommendation — **Bank:** private cloud (or hybrid to satisfy strict regulatory/compliance requirements). **Startup:** public cloud for low upfront cost, speed, and elasticity.
 4. Justify using NIST characteristics (elasticity for startup; control/security for bank).
 
-**LA2. Detail the Seven-Step Migration Model and explain how the "6 R's" strategies slot into it.**
+**LA2. Detail Rajkumar Buyya's Seven-Step Cloud Migration Model and explain how the Gartner "6 R's" strategies slot into it.**
 
 **Model Answer (step-by-step):**
-1. Step 1 — Assess/inventory; Step 2 — Prioritize/triage; Step 3 — Design target architecture; Step 4 — Migrate/implement; Step 5 — Validate/test; Step 6 — Optimize; Step 7 — Operate & manage.
-2. Align the 6 R's: at Step 3 you choose per-workload strategy — Rehost (move as-is), Replatform (minor optimization), Repurchase (replace with SaaS), Refactor (cloud-native redesign), Retire (decommission), Retain (keep on-prem).
-3. Explain how Step 6 (optimize) maps to right-sizing, autoscaling, reserved instances, monitoring.
-4. Emphasize that the model is iterative and that Steps 5 and 7 include rollback planning and ongoing operations.
+1. **Step 1 — Conduct Cloud Assessments:** Feasibility analysis (technical, economic, legal, compliance), workload inventory, ROI/TCO model.
+2. **Step 2 — Isolate the Dependencies:** Discover inter-system coupling, API dependencies, OS bindings; group into migration waves.
+3. **Step 3 — Map the Applications:** Match each component to a target cloud delivery model (IaaS/PaaS/SaaS) and specific cloud services.
+4. **Step 4 — Re-architect the Applications:** Decouple state, eliminate SPOFs, implement 12-factor cloud-native patterns.
+5. **Step 5 — Augment the Applications:** Integrate cloud-native middleware (message queues, auto-scaling, logging, telemetry).
+6. **Step 6 — Test Cloud-Readiness & Governance:** Functional regression, HA/DR failover drills, security audits, compliance verification.
+7. **Step 7 — Optimize, Manage, and Iterate:** Production cutover, continuous SLA monitoring, FinOps right-sizing.
+8. Align the 6 R's: at Step 3, you choose per-workload strategy — Rehost (move as-is), Replatform (minor optimization), Repurchase (replace with SaaS), Refactor (cloud-native redesign), Retire (decommission), Retain (keep on-prem).
+9. Emphasize that the model is iterative and that Step 7 includes rollback planning and ongoing operations.
 
 **LA3. Explain how live VM migration works (pre-copy algorithm) and why the "dirty page" tracking and a brief pause are needed.**
 
