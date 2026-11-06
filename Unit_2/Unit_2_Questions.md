@@ -17,7 +17,8 @@
 - B) The application and, typically, its data
 - C) The network hardware
 - D) The facility cooling
-- Q3.** Which characteristic of cloud computing means users can provision resources automatically without human provider interaction?
+
+**Q3.** Which characteristic of cloud computing means users can provision resources automatically without human provider interaction?
 - A) Broad network access
 - B) On-demand self-service
 - C) Resource pooling
