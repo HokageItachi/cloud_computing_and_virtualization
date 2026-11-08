@@ -1,56 +1,124 @@
 ---
 name: modern-interactive-site-builder
-description: Builds modern, zero-dependency, self-contained interactive websites, documentation hubs, product portals, and dashboards from any Markdown files or project docs. Includes dark/light mode, dynamic in-page TOCs, fast search, copyable code blocks, callouts, multi-language code & terminal output presentation (with live run/console views), and GitHub Pages CI/CD.
+description: Universal Project Showcase & Interactive Documentation Platform. Transforms any Markdown files, project docs, codebases, diagrams, and assets into a modern, zero-dependency, self-contained interactive website. Combines a developer portfolio, interactive project showcase, technical documentation system, code runner, and knowledge hub with dark/light themes, search, and GitHub Pages CI/CD.
 ---
 
-# Modern Interactive Site Builder
+# Universal Project Showcase & Interactive Documentation Platform
 
-A universal, production-grade skill to transform any set of Markdown files, technical documentation, API specifications, or project notes into a modern, fast, zero-dependency interactive Single-Page Application (SPA).
+A master architectural skill and production playbook to transform any collection of Markdown files, project documentation, source-code examples, images, diagrams, and resources into a modern, self-contained, zero-runtime-dependency web platform.
 
-Works for **any domain**: documentation portals, knowledge bases, developer hubs, product manuals, project dashboards, portfolios, or research workspaces.
+**This is NOT a simple Markdown notes website or conventional documentation reader.**
 
----
+The goal is to create a **Universal Project Showcase Platform** combining:
+- A premium developer portfolio.
+- An interactive project presentation platform.
+- A technical documentation system.
+- A knowledge and resource hub.
+- An interactive code showcase.
+- A static and dynamic content experience.
 
-## 1. Architectural Philosophy
+Capable of professionally presenting virtually any project across domains: software, AI/ML, cybersecurity, networking, research experiments, hardware/IoT, academic courses, business dashboards, creative multimedia, APIs, and frameworks.
 
-1. **Zero External Runtime Dependencies:**
-   - Pure HTML5, modern CSS3 variables, and vanilla ES6+ JavaScript.
-   - Built using Node.js built-in modules (`fs`, `path`, `http`). No bloated node_modules or Webpack/Vite build lock-in unless explicitly requested.
-2. **Decoupled Directory Architecture:**
-   - Never dump build scripts, styles, logic, and content into a single root pile.
-   - Maintain a clean separation between source assets, build tooling, content, and the deployable bundle.
-3. **JAMstack & Client-Side Execution:**
-   - Content is compiled at build time into an in-memory data bundle (`window.APP_DATA`) inside `index.html`.
-   - Runs client-side in the browser: instant searching, tab switching, and reading progress with zero server latency.
-   - Local state persists across sessions via safe `localStorage` wrappers.
-4. **Offline & Cloud Ready:**
-   - Double-clickable as a standalone local file (`file:///...`).
-   - Easily served locally with a 1-file zero-dependency preview server (`npm start`).
-   - Automatically deployable to GitHub Pages via an included GitHub Actions workflow.
+**Core principle: Every project should feel like a professionally presented product, not another Markdown document displayed in a browser.**
 
 ---
 
-## 2. Directory Structure Blueprint
+## 1. Design Philosophy & Visual Direction
 
-Enforce this directory organization across projects:
+The platform must project a sophisticated, modern, premium, and professional editorial appearance.
+
+### Visual Characteristics
+- Minimalist but visually engaging with modern editorial and product-design aesthetics.
+- Thoughtful glassmorphism: subtle translucent surfaces, controlled backdrop blur (`backdrop-filter: blur(8px)`), soft ambient shadows, and delicate borders.
+- Selective glassmorphism: applied to navigation bars, floating panels, search overlays, modal dialogs, and contextual elements—never overused on basic content reading surfaces.
+- Excellent typography, strong visual hierarchy, generous whitespace, and balanced layouts.
+- Smooth transitions and meaningful micro-interactions without performance overhead.
+- Consistent design language across all views.
+
+### Color Direction
+Sophisticated neutral palette:
+- **Preferred:** Off-white, warm white, deep slate, charcoal, muted grey, soft silver, and restrained semantic accent colors (emerald, sky, amber, rose, purple).
+- **Avoid:** Neon colors, excessive saturation, gaming-style aesthetics, flashy gradients, excessive glow effects, and overly heavy visual clutter.
+
+---
+
+## 2. Universal Website Architecture & Sections
+
+The platform delivers a cohesive multi-page-style Single-Page Application (SPA) driven by client-side routing and pre-compiled data.
+
+### 2.1 Home / Overview
+- **Hero Section:** Clear platform title, concise description, and contextual call-to-actions.
+- **Repository / Platform Highlights:** Derived statistics (e.g., total projects, docs, categories, code examples) calculated directly from real content (never fabricated).
+- **Featured Projects Grid:** Highlighted flagship projects with metadata and visual badges.
+- **Category Overview:** Interactive category pills or cards (AI/ML, Web, Security, Systems, Academic, Research).
+- **Recently Updated:** Timeline or grid of recent projects and guides.
+- **Quick Links & Global Footer.**
+
+### 2.2 Project Explorer
+- **Interactive Discovery Grid:** Responsive card layout with category chips, technology badges, and live search.
+- **Multi-Facet Filtering:** Filter in real-time by Category, Technology Stack, and Project Status (Completed, Active, Prototype, Benchmark).
+- **Sorting Options:** Sort by name, date, complexity, or featured status.
+- **Live Search:** Instant keyword matching across titles, tags, and summaries with zero page reload.
+- **Empty & No-Results States:** Helpful feedback with a 1-click "Clear Filters" action.
+
+### 2.3 Individual Project Showcase (Dynamic Template Adaptation)
+Adapts layout dynamically based on the project's actual domain:
+- **AI / ML Project:** Highlights datasets, model architecture, training curves, evaluation metrics, and inference examples.
+- **Cybersecurity / Systems:** Emphasizes attack scenarios, detection workflows, log analysis, and defense architectures.
+- **Web / Mobile App:** Focuses on user journey, UI screenshots, live component demos, and API contracts.
+- **Research / Academic:** Prioritizes problem statements, formal methodology, experimental findings, and references.
+- **Modular Sections Supported:** Overview, Objectives, System Architecture, Tech Stack, Code Examples, Screenshots & Demos, Setup/Usage, Results, Limitations, and Future Scope.
+
+### 2.4 Documentation Hub
+- **Focused Reading Interface:** Left navigation sidebar (grouped by topic/unit), central long-form reading pane, and right-hand sticky Table of Contents (TOC).
+- **Reading Metadata:** Real-time calculated reading time (`~X min read`), word count, and last-updated tag.
+- **In-Page Smooth Scroll:** Active scrollspy highlighting the current section as the user reads.
+- **Admonitions & Callouts:** Distinct visual containers for Tips (💡), Warnings (⚠️), Notes (📌), and Critical Alerts (🛑).
+
+### 2.5 Code Showcase & Interactive Terminal
+- **IDE-Style Window:** Header with window control dots (`🔴 🟡 🟢`), language badge, file path, and 1-click "📋 Copy" button.
+- **Code + Output Pairing:** Detects adjacent code and output blocks in Markdown, fusing them into a unified editor + terminal drawer.
+- **Live Client-Side Execution:** Runs JavaScript in sandboxed environments, renders live HTML/CSS previews, and offers simulated terminal execution with realistic timing for compiled languages (Python, C++, Java, Bash).
+
+### 2.6 Resources & Knowledge Base
+- Centralized index of diagrams, architecture schematics, downloadable assets, configuration templates, and curated reference links organized by topic.
+
+### 2.7 About & Repository Specifications
+- Explains repository structure, build process, deployment instructions, and platform architecture. Only rendered when meaningful data is present.
+
+---
+
+## 3. Modular Directory Structure Blueprint
+
+Always decouple project code, assets, content, and scripts into dedicated folders:
 
 ```text
 <project-root>/
 ├── .github/
 │   └── workflows/
 │       └── deploy-pages.yml       # Automated GitHub Pages CI/CD deployment
-├── content/                       # Source Markdown documents & assets
-│   ├── overview.md
-│   ├── guides/
-│   └── references/
-├── src/                           # Frontend source files
+├── content/                       # Source Markdown documents & media assets
+│   ├── projects/                  # Project detail files (*.md with frontmatter)
+│   ├── documentation/             # Technical guides, notes, & specifications
+│   ├── resources/                 # Reference docs, glossaries, & roadmaps
+│   └── assets/                    # Screenshots, diagrams, & policy files
+├── src/                           # Frontend application source code
 │   ├── css/
-│   │   └── style.css              # Design tokens, components, responsive layout & print styles
+│   │   ├── base.css               # Design tokens, reset, & typography
+│   │   ├── layout.css             # App shell, navigation, drawer, & topbar
+│   │   ├── components.css         # Cards, terminal, TOC, badges, & modals
+│   │   ├── themes.css             # Dark and light mode variable overrides
+│   │   └── style.css              # Main compiled / imported stylesheet
 │   ├── js/
-│   │   └── app.js                 # Interactive logic (TOC, search, theme, copy, tabs, terminal runner)
-│   └── template.html              # Clean semantic HTML application template
+│   │   ├── app.js                 # App bootstrapper & global state
+│   │   ├── navigation.js          # SPA route switcher & drawer controller
+│   │   ├── search.js              # Instant client-side search & filter engine
+│   │   ├── projects.js            # Project explorer & dynamic detail renderer
+│   │   ├── terminal.js            # Code runner, copy handler, & terminal HUD
+│   │   └── theme.js               # Theme toggle with localStorage persistence
+│   └── template.html              # Clean semantic HTML application template shell
 ├── scripts/                       # Dedicated build, preview, & test tooling
-│   ├── build.js                   # Markdown parser, callout generator, & HTML compiler
+│   ├── build.js                   # Recursive Markdown parser, compiler & bundler
 │   ├── server.js                  # Zero-dependency local preview server (port 3000)
 │   └── test.js                    # Automated headless browser test verification suite
 ├── index.html                     # Compiled production single-page application
@@ -59,62 +127,103 @@ Enforce this directory organization across projects:
 
 ---
 
-## 3. Core UI & UX Superpowers
+## 4. Design System & Design Tokens (`src/css/`)
 
-### A. Modern Design System (`src/css/style.css`)
-- **Design Tokens:** Dark mode by default (`#080d1a` background, `#0f172a` surface, `#1e293b` cards) with smooth switching to high-contrast Light mode (`#f8fafc`).
-- **Responsive Drawer:** Left sidebar sticky on desktop (280–300px), transforming into a smooth slide-out drawer with a blurred backdrop overlay (`backdrop-filter: blur(4px)`) on mobile.
-- **Sticky Glassmorphism Topbar:** Displays breadcrumbs, live search bar, and custom stat badges.
-- **Print Optimization:** High-fidelity `@media print` stylesheet that strips sidebars, headers, and UI controls for clean PDF generation.
+Enforce consistent CSS variables across dark and light themes:
 
-### B. Dynamic In-Page Outline (Table of Contents)
-- Inspects `h2` and `h3` tags in the currently active document.
-- Generates a sticky or top-level interactive TOC with smooth anchor links (`#heading-id`).
-- Calculates reading metrics: estimated reading time (`~X min read`) and word counts.
+```css
+:root {
+  /* Surface & Background */
+  --bg-app: #080d1a;
+  --bg-surface: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-hover: #273549;
+  
+  /* Borders & Glassmorphism */
+  --border: #334155;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-focus: #10b981;
+  --glass-bg: rgba(15, 23, 42, 0.75);
+  --glass-blur: blur(12px);
+  
+  /* Typography Colors */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  /* Semantic Accents */
+  --primary: #10b981;
+  --primary-soft: rgba(16, 185, 129, 0.12);
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --purple: #a855f7;
+  --purple-soft: rgba(168, 85, 247, 0.12);
+  --warn: #f59e0b;
+  --warn-soft: rgba(245, 158, 11, 0.12);
+  --danger: #f43f5e;
+  --danger-soft: rgba(244, 63, 94, 0.12);
+  
+  /* Font Stacks */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  
+  /* Radii & Elevation */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.55);
+}
 
-### C. Rich Admonitions & Callouts
-Automatically parses blockquotes into styled alert containers:
-- `> **Note:**` or `> [!NOTE]` $\rightarrow$ `callout-note` (📌 Accent/Sky blue)
-- `> **Tip:**` or `> [!TIP]` $\rightarrow$ `callout-tip` (💡 Emerald green)
-- `> **Warning:**` or `> [!WARNING]` $\rightarrow$ `callout-warning` (⚠️ Amber)
-- `> **Danger:**` or `> [!CAUTION]` $\rightarrow$ `callout-danger` (🛑 Rose red)
-
-### D. Client-Side Search & Filtering
-- Instant, zero-latency keyword searching with match highlighting.
-- Built-in clear button (`✕`) when input is non-empty.
-- Keyboard shortcut support: `Ctrl + K` or `/` immediately focuses the search bar.
+body.light {
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --border: #e2e8f0;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-focus: #059669;
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+  --primary: #059669;
+  --primary-soft: rgba(5, 150, 105, 0.1);
+  --accent: #0284c7;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+```
 
 ---
 
-## 4. Universal Code & Output Presentation Patterns
+## 5. Multi-Language Code Presentation & Execution Engine
 
-Code in any language (Python, JavaScript, C++, Java, Bash, Go, SQL, Rust, etc.) must be presented cleanly with its corresponding **Output / Answer / Console execution**.
+Present code in any programming language (Python, JavaScript, TypeScript, C, C++, Java, Bash, Go, SQL, Rust, HTML, CSS) paired with its corresponding **Output / Answer / Console execution**.
 
-### Pattern 1: Integrated Code + Terminal Output Window (Stacked Console)
-Pairs a source code block with its stdout/terminal output in a single cohesive IDE-style container.
+### Pattern A: Stacked Code Editor + Terminal Drawer
+Adjacent code and output blocks in Markdown merge automatically:
 
-#### Markdown Standard Convention:
-Write a code block followed immediately by an `output`, `terminal`, or `console` block:
 ````markdown
 ```python
-def fibonacci(n):
-    a, b = 0, 1
-    for _ in range(n):
-        yield a
-        a, b = b, a + b
+def analyze_traffic(packets):
+    return {"total": len(packets), "flagged": sum(1 for p in packets if p.is_suspicious)}
 
-print(list(fibonacci(7)))
+print(analyze_traffic(sample_stream))
 ```
 ```output
-[0, 1, 1, 2, 3, 5, 8]
+{"total": 1420, "flagged": 3}
 ```
 ````
 
-#### Compiled HTML Structure:
-The compiler (`scripts/build.js`) detects adjacent code and output blocks, fusing them into a unified component:
+**Compiled Terminal UI:**
 ```html
 <div class="code-output-container">
-  <!-- Code Header -->
   <div class="code-header">
     <div class="code-lang-badge"><span class="lang-dot"></span> PYTHON</div>
     <div class="code-actions">
@@ -124,7 +233,6 @@ The compiler (`scripts/build.js`) detects adjacent code and output blocks, fusin
   </div>
   <pre class="code-editor"><code class="lang-python">...</code></pre>
   
-  <!-- Terminal Output Drawer -->
   <div class="terminal-drawer">
     <div class="terminal-header">
       <div class="terminal-dots">
@@ -135,218 +243,90 @@ The compiler (`scripts/build.js`) detects adjacent code and output blocks, fusin
       <span class="terminal-title">Terminal Output / Stdout</span>
       <button class="terminal-clear-btn">Clear</button>
     </div>
-    <pre class="terminal-body"><code>[0, 1, 1, 2, 3, 5, 8]</code></pre>
+    <pre class="terminal-body"><code>{"total": 1420, "flagged": 3}</code></pre>
   </div>
 </div>
 ```
 
----
-
-### Pattern 2: Tabbed Code / Output Switcher
-For long scripts or large datasets, use tabs to toggle between Code and Output without vertical clutter:
-
-```html
-<div class="tabbed-code-container">
-  <div class="code-tabs-header">
-    <button class="code-tab active" data-target="code-pane">💻 Code (C++)</button>
-    <button class="code-tab" data-target="output-pane">🖥️ Output (stdout)</button>
-    <button class="code-copy-btn">📋 Copy</button>
-  </div>
-  <div class="code-tab-pane active" id="code-pane">
-    <pre><code class="lang-cpp">...</code></pre>
-  </div>
-  <div class="code-tab-pane" id="output-pane">
-    <pre class="terminal-output"><code>Build succeeded. Output: 42</code></pre>
-  </div>
-</div>
-```
+### Pattern B: Client-Side Interactive "▶ Run" Functionality
+- **JavaScript Execution:** Evaluated in a sandboxed execution context, redirecting `console.log` and `console.error` directly into the terminal window.
+- **HTML / CSS Live Preview:** Rendered into an isolated sandboxed `<iframe>` with live reload.
+- **Compiled Languages (Python, C++, Java, Rust, Go, Bash):** Plays an animated simulated terminal execution with typing effect, realistic timing (`Finished in 0.03s`), and return codes.
+- **Collapsible Drawer for Long Outputs:** Automatically caps terminal body at `max-height: 220px` with a **"▾ Show Full Output (N lines)"** toggle.
 
 ---
 
-### Pattern 3: Multi-Language Comparison Switcher
-When explaining concepts implemented across multiple programming languages:
+## 6. Build Compiler & Data Extraction (`scripts/build.js`)
 
-```html
-<div class="multi-lang-container">
-  <div class="lang-selector-bar">
-    <button class="lang-pill active" data-lang="python">Python</button>
-    <button class="lang-pill" data-lang="cpp">C++</button>
-    <button class="lang-pill" data-lang="java">Java</button>
-    <button class="lang-pill" data-lang="bash">Bash</button>
-    <button class="code-copy-btn">📋 Copy</button>
-  </div>
-  <!-- Code snippets switched dynamically via JS -->
-</div>
-```
+The build script compiles Markdown files into `window.APP_DATA`:
 
----
-
-### Pattern 4: Live Client-Side Execution (Zero Backend Runner)
-
-Make code interactive directly in the student's or user's browser without any server:
-
-1. **JavaScript / HTML / CSS Execution:**
-   - Execute user or sample code safely using a sandboxed `<iframe>` or `new Function()` with redirected `console.log`:
-   ```javascript
-   function executeJS(code, outputEl) {
-     outputEl.textContent = '';
-     const log = (...args) => {
-       outputEl.textContent += args.join(' ') + '\n';
-     };
-     try {
-       const fn = new Function('console', code);
-       fn({ log, error: log, warn: log });
-     } catch (err) {
-       outputEl.textContent = 'Error: ' + err.message;
-       outputEl.classList.add('terminal-error');
-     }
-   }
-   ```
-2. **Python Execution (Zero Server via WebAssembly):**
-   - For interactive Python notebooks, dynamically import **Pyodide** via CDN:
-   ```html
-   <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
-   ```
-   Execute Python code in WebAssembly on the client thread and stream outputs directly into the terminal block.
-3. **Static Simulated Execution:**
-   - For compiled languages (C++, Java, Rust, Go, Bash), clicking **"▶ Run"** plays a smooth typing animation showing the pre-compiled expected output, exit codes, and execution duration (`Finished in 0.04s, exit code 0`).
+1. **Recursive Discovery:** Walks `content/` to find all `.md` files.
+2. **Metadata Extraction:** Parses YAML frontmatter (title, description, category, tags, status, featured, cover, date).
+3. **Smart Content Classification:**
+   - Detects whether a document is a **Project Showcase**, a **Technical Guide**, an **API Reference**, or a **Curriculum Resource**.
+4. **Markdown-to-HTML Conversion:**
+   - Converts headings and assigns persistent anchor IDs.
+   - Generates Table of Contents tree per document.
+   - Formats blockquotes matching `note|tip|warning|danger` into styled `<div class="callout callout-...">`.
+   - Wraps tables inside responsive `<div class="tbl-wrap"><table>...</table></div>`.
+   - Detects adjacent code and output blocks and fuses them into `.code-output-container`.
+5. **Data Serialization:** Serializes all structured data into `window.APP_DATA` in `index.html`.
+   - Ensures `</script` is safely escaped as `<\\/script` to prevent premature script termination.
 
 ---
 
-### Pattern 5: Collapsible Long Outputs
-For long outputs (e.g. 50+ lines of server logs, raw JSON API payloads, or stack traces):
-- Cap output height with `max-height: 220px; overflow-y: auto;`.
-- Add an expandable toggle button: `▾ Show Full Output (84 lines)` $\rightarrow$ `▴ Collapse`.
+## 7. Implementation Workflow (7-Phase Lifecycle)
+
+When transforming a repository into a Universal Showcase Platform, execute these phases systematically:
+
+### Phase 1: Repository Discovery & Content Analysis
+- Scan the entire repository for Markdown files, images, code examples, and configuration files.
+- Catalog content types (Projects, Docs, Guides, Resources). Do not delete or overwrite source docs.
+
+### Phase 2: Design System & Template Preparation
+- Establish `src/css/style.css` design tokens and responsive breakpoints.
+- Build `src/template.html` containing application shell, drawer, topbar, search overlay, and section containers.
+
+### Phase 3: Build Compiler Engineering
+- Implement `scripts/build.js` with robust recursive parsing, frontmatter extraction, and HTML bundling.
+
+### Phase 4: Core View Implementations
+- **Home / Overview:** Hero, statistics, featured cards, and category browser.
+- **Project Explorer:** Multi-facet filter bar, live search, and card grid.
+- **Project Detail View:** Domain-adaptive showcase templates.
+- **Documentation Hub:** Left nav, reader pane, right-side dynamic TOC, and reading time.
+- **Code & Output Showcase:** IDE containers with copy buttons and terminal drawer.
+- **Resources & Knowledge Base:** Asset catalogs and external link hubs.
+
+### Phase 5: Interactive Client Features
+- `Ctrl+K` global search overlay across all projects and docs.
+- Theme switching (dark/light) with `localStorage` and system theme detection.
+- In-page Table of Contents with scrollspy anchor highlighting.
+- 1-click code copying with animated toast notifications.
+- Client-side code execution and live previews.
+
+### Phase 6: Responsive & Print Optimization
+- Ensure zero horizontal scrolling across mobile viewports.
+- Configure `@media print` rules for clean, paginated PDF exports.
+
+### Phase 7: Verification & Automated CI/CD
+- Test locally using zero-dependency `scripts/server.js` (`npm start`).
+- Run automated headless browser verification via `scripts/test.js` (`npm test`) checking zero console errors.
+- Commit `.github/workflows/deploy-pages.yml` for automated GitHub Pages hosting.
 
 ---
 
-## 5. CSS Stylesheet for Code & Terminal Consoles
+## 8. Final Acceptance Checklist
 
-Add these styles to `src/css/style.css`:
-
-```css
-/* Code + Output Container */
-.code-output-container {
-  margin: 24px 0;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--border);
-  background: var(--code-bg);
-  box-shadow: var(--shadow-sm);
-}
-
-.code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-  font-family: var(--font-mono);
-}
-
-.code-lang-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--accent);
-}
-
-.lang-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.code-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.code-action-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 3px 10px;
-  border-radius: var(--radius-xs);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.code-action-btn:hover {
-  background: var(--bg-card);
-  color: var(--primary);
-  border-color: var(--primary);
-}
-
-.code-editor {
-  margin: 0;
-  padding: 18px 20px;
-  overflow-x: auto;
-  background: transparent;
-}
-
-/* Terminal Drawer */
-.terminal-drawer {
-  background: #050811;
-  border-top: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.terminal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 14px;
-  background: rgba(0, 0, 0, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.terminal-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.dot-red { width: 10px; height: 10px; border-radius: 50%; background: #ff5f56; }
-.dot-yellow { width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e; }
-.dot-green { width: 10px; height: 10px; border-radius: 50%; background: #27c93f; }
-
-.terminal-title {
-  font-size: 11px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.terminal-body {
-  padding: 14px 18px;
-  color: #38bdf8;
-  margin: 0;
-  overflow-x: auto;
-  line-height: 1.6;
-}
-
-.terminal-body::before {
-  content: "$ ";
-  color: var(--primary);
-  font-weight: 700;
-}
-```
-
----
-
-## 6. Implementation Checklist for Agents
-
-When building an interactive site, always check:
-- [ ] Code blocks from any language (`python`, `js`, `cpp`, `bash`, `java`, `sql`) carry language tags.
-- [ ] Adjacent `output` or `terminal` markdown blocks merge into an integrated console window.
-- [ ] 1-click **📋 Copy** buttons function with instant clipboard write and toast feedback.
-- [ ] Optional **▶ Run** triggers client-side sandbox execution or animated mock simulation.
-- [ ] Mobile responsive layout handles wide tables and code blocks with horizontal touch scrolling.
-- [ ] Automated headless test suite validates that code blocks and copy buttons render without DOM errors.
+Before declaring a platform complete, verify:
+- [ ] Universal Project Showcase: Adapts flexibly to software, AI, security, research, academic, and business projects.
+- [ ] Zero Runtime Backend: Runs 100% client-side with precompiled `window.APP_DATA`.
+- [ ] No Empty Shells: Every nav link and project card points to real, populated content.
+- [ ] Multi-Language Code Presentation: IDE window styling, language tags, and copy buttons on all code blocks.
+- [ ] Code + Output Integration: Adjacent code and terminal output are visually paired.
+- [ ] Dynamic Outline (TOC): Sticky headings tree with active scrollspy and reading time estimates.
+- [ ] Global Search: Instant `Ctrl+K` search across projects and docs.
+- [ ] Flawless Responsive Behavior: Verified on mobile, tablet, and desktop with zero horizontal overflow.
+- [ ] Clean Theme Switching: Dark/light mode persistence without initial page flicker.
+- [ ] Automated GitHub Pages CI/CD: Ready `.github/workflows/deploy-pages.yml` deploying on push.
+- [ ] Zero Console Errors: Validated in headless browser test runs.
